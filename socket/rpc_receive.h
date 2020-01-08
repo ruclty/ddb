@@ -8,8 +8,6 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include "global.h"
-#include <iostream>
 #include "thread"
 #include <netinet/in.h>
 #include <sys/types.h>
@@ -20,7 +18,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include "global.h"
+#include "../global.h"
 // #include "../excute/site_excution.h"
 using std::string;
 using std::cout;

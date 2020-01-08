@@ -3,7 +3,7 @@
 //
 #include "rpc_receive.h"
 //#include "../querytree/querytree.h"
-#include "global.h"
+#include "../global.h"
 #include  <map>
 #include <pthread.h>
 using namespace std;

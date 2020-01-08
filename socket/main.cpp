@@ -1,5 +1,5 @@
 #include <iostream>
-#include "global.h"
+#include "../global.h"
 #include "rpc_receive.h"
 #include "rpc_sent.h"
 using namespace std;
