@@ -94,6 +94,21 @@ string rela_to_token(RELATION rel){
     }
 }
 
+RELATION token_to_rela(string token){
+    if(token == "=")
+        return EQ;
+    if(token == "<")
+        return L;
+    if(token == ">")
+        return G;
+    if(token == "<=")
+        return LE;
+    if(token == ">=")
+        return GE;
+    if(token == "!=")
+        return NE;
+}
+
 struct predicateV{
 	string table_name;
 	string attr_name;
