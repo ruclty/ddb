@@ -9,6 +9,9 @@
 #include <queue>
 #include <map>
 #include <regex>
+
+#define SERVER_PORT 6666
+
 using namespace std;
 string mapIdtoIp(int id,int this_site)
 {
@@ -47,6 +50,7 @@ enum OPERATORTYPE {
 };    
 
 struct Operator{
+	int id;
 	string content;
 	OPERATORTYPE ope;
 	int result_frag_id;	

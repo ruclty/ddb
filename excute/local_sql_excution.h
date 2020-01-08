@@ -40,10 +40,10 @@ class MySql{
 
 		int site_id;
 	public:
-		GDD gdd = GDD();
+	//	GDD gdd = GDD();
 		MySql(string, int);
 		~MySql();
-		vector<string> split(const string&, const string&);
+		//vector<string> split(const string&, const string&);
 		//this 3 functions
 		//transfer_sql
 		int excute_select_sql(string ,int);
@@ -54,7 +54,7 @@ class MySql{
 		int create_allocated_table(string,int,string);
 		void release_all_temp_table();
 		int load_datafile(string,vector<string>,vector<string> ,string,string);
-		frag_info load_new_frag_info(int ,string, vector<string>, vector<attr_info> ,int ,int );
+		frag_info load_new_frag_info(int ,string, vector<string> ,int ,int );
 
 
 };

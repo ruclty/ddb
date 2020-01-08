@@ -1,3 +1,6 @@
+#ifndef _GDD_CPP_
+#define _GDD_CPP_
+
 #include "gdd.h"
 #include <iostream>
 #include <curl/curl.h>
@@ -20,6 +23,11 @@ FRAGTYPE str_to_frag_type(string str)
     FRAGTYPE f = (str=="H")?H:V;
     return f;
 }
+
+int from_name_find_frag_id(string table_name){
+	vector<string> spl = split(table_name,"_");
+	return atoi(spl[spl.size()-1].c_str());
+	}
 
 void print_site(site_info s){
     cout << "Sites:" <<s.site_id<< endl;
@@ -84,6 +92,13 @@ void GDD::update_frag_info(int frag_id,vector<string> attr_names,vector<attr_inf
 }
 
 }*/
+
+string get_frag_name(int frag_id)
+{
+    string name = "frag_";
+    name = name + to_string(frag_id);
+    return name;
+}
 
 string etcd_get_value(string key)
 {
@@ -1001,3 +1016,5 @@ int get_new_frag_id()
 {
     return get_frag_num()+1;
 }
+
+#endif

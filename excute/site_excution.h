@@ -7,20 +7,20 @@ using namespace std;
 
 
 struct result{
-	string result_frag_id;
+	int result_frag_id;
 	string table_content;// true:sql, false:table content
 };
 
 class site_excution{
-	private:
+	public:
 		int site_id;
 
-	public:
 		site_excution(int);
 		~site_excution();
 		vector<Operator> sql_queue;
 		vector<string> table_queue;
-		MySql mysql;
+	
+		MySql mysql = MySql(" ",site_id);
 
 		vector<Operator> check_plan();
 		vector<Operator> recieve_plan(vector<Operator>);

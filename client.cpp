@@ -5,8 +5,9 @@
 #include "querytree/querytree.cpp"
 #include "gdd/gdd.cpp"
 #include "excute/QueryOptimise.cpp"
+#include "excute/QueryOptimise.h"
 #include "excute/local_sql_excution.cpp"
-#include "socket/rpc_receive.h"
+#include "socket/rpc_receive.cpp"
 
 using namespace std;
 

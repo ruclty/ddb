@@ -8,5 +8,5 @@ using namespace std;
 
 int main(){
     rpc_receive rec = rpc_receive(2);
-    startListening(6666);
+    startListening(7777);
 }

@@ -1,10 +1,16 @@
 //
 // Created by dyj on 2019/12/27.
 //
+
+#ifndef _RPC_SENT_CPP_
+#define _RPC_SENT_CPP_
+
 //#include "thread"
 //#include "global.h"
 #include "rpc_sent.h"
 #include <arpa/inet.h>
+
+#define BUFFER_SIZE 1024
 
 
 string EnumToString(OPERATORTYPE ope)
@@ -116,7 +122,7 @@ void SendTable(int frag_id, string frag_content, string origin_table_name, int t
     cout <<  "frag_content_and_frag_id\t" << frag_content_and_frag_id << endl;
     socket_client(target_site_ip,frag_content_and_frag_id);
 }
-void SendResult(int frag_id, string frag_content, string origin_table_name,  int target_site_id, int sourceId)
+void SendResultTable(int frag_id, string frag_content, string origin_table_name,  int target_site_id, int sourceId)
 {
     string target_site_ip=mapIdtoIp(target_site_id, sourceId);
     string frag_content_and_frag_id;
@@ -130,3 +136,6 @@ void SendResult(int frag_id, string frag_content, string origin_table_name,  int
     cout <<  "return ok\t" << ok  << endl;
     return ok;*/
 }
+
+
+#endif

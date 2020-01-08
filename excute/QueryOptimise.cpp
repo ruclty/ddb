@@ -10,7 +10,7 @@ using namespace std;
 
 query_plan::query_plan(query_tree_node* root){
     this->root = root;
-    this->gdd.generate_gdd();
+   // this->generate_gdd();
 }
 
 query_plan::~query_plan(){}
@@ -20,12 +20,10 @@ int query_plan::semi_join(int target_site, int frag_id1, int frag_id2){
 }
 
 void query_plan::transfer_plan(){
-    for(int i=1;i<=4;i++)
+    for(int i=1;i<=4;i++){
     	   if(i == 1)
     	   	continue;
-        bool sent = SendPlan(this->plan[i], i, 1);
-        if(sent == false)
-            cout << "sent to site:"+ to_string(i)+ " failed!";
+        SendPlan(this->plan[i], i, 1);
     }
 }
 
@@ -33,14 +31,14 @@ int query_plan::transfer_sql(string sql, int source_site_id, int excute_site_id,
     cout << "trangsferring "+ sql << endl;
     cout << " from sourceId:" +to_string(source_site_id) + " to targetId:"+to_string(excute_site_id);
     frag_info new_frag_info = frag_info();
-    int new_frag_id = gdd.get_new_frag_id();
+    int new_frag_id = get_new_frag_id();
 
     string new_frag_name = "temp_table_"+ to_string(new_frag_id);
     new_frag_info.frag_id = new_frag_id;
-    new_frag_info.table_name = new_frag_name;
+   // new_frag_info.table_name = new_frag_name;
     new_frag_info.site_id = excute_site_id;
     cout << ", new_frag_info.site_id :" + to_string(new_frag_info.site_id);
-    gdd.create_frag_info(new_frag_info);
+    save_frag_info(new_frag_info);
     cout << ", and the temp_table_id is:" + to_string(new_frag_id) << endl; 
 
     Operator now_sql;
@@ -56,10 +54,10 @@ int query_plan::transfer_table(string table_name, int source_site_id, int excute
     cout << "trangsferring "+ table_name << endl;
     cout << " from sourceId:" +to_string(source_site_id) + " to targetId:"+to_string(excute_site_id) ;
 
-    frag_info source_frag_info = gdd.get_frag_info(gdd.from_name_find_frag_id(table_name));
+    frag_info source_frag_info = get_frag_info(from_name_find_frag_id(table_name));
 
     frag_info new_frag_info = frag_info();
-    int new_frag_id = gdd.get_new_frag_id();
+    int new_frag_id = get_new_frag_id();
     string new_frag_name = "temp_table_"+ to_string(new_frag_id);
     new_frag_info.frag_id = new_frag_id;
     new_frag_info.table_name = new_frag_name;
@@ -67,8 +65,8 @@ int query_plan::transfer_table(string table_name, int source_site_id, int excute
     cout << ", new_frag_info.site_id :" + to_string(new_frag_info.site_id);
     new_frag_info.size = source_frag_info.size;
     new_frag_info.attr_names = source_frag_info.attr_names;
-    new_frag_info.attributes = source_frag_info.attributes;
-    gdd.create_frag_info(new_frag_info);
+    //new_frag_info.attributes = source_frag_info.attributes;
+    save_frag_info(new_frag_info);
     cout << "and the temp_table_id is:" + to_string(new_frag_id) << endl; 
 
     Operator now_sql;
@@ -107,9 +105,9 @@ vector<frag_info> query_plan::how_to_transfer(vector<int> frag_ids){
     map<int,int> size_of;
     //cout << "frag_ids_size:" + to_string(frag_ids.size()) << endl;
     for(int fragIndex = 0; fragIndex < frag_ids.size(); fragIndex ++){
-        frag_info temp = gdd.get_frag_info(frag_ids[fragIndex]);
+        frag_info temp = get_frag_info(frag_ids[fragIndex]);
 
-        frag_infos.push_back(gdd.get_frag_info(frag_ids[fragIndex]));
+        frag_infos.push_back(get_frag_info(frag_ids[fragIndex]));
 
         //cout << to_string(frag_infos[fragIndex].site_id) << "," << endl;
         if(frag_infos[fragIndex].site_id == 1)
@@ -154,8 +152,8 @@ vector<frag_info> query_plan::how_to_transfer(vector<int> frag_ids){
             continue;
         }
 
-        int new_frag_id = transfer_table(now_frag_info.table_name,now_frag_info.site_id,target_site_id);
-        frag_info new_frag_info = gdd.get_frag_info(new_frag_id);
+        int new_frag_id = transfer_table(get_frag_name(now_frag_info.frag_id),now_frag_info.site_id,target_site_id);
+        frag_info new_frag_info = get_frag_info(new_frag_id);
         target_frag_infos.push_back(new_frag_info);
     }
     return target_frag_infos;
@@ -177,8 +175,8 @@ vector<frag_info> query_plan::how_transfer(vector<int> frag_ids){
             continue;
         }
 
-        int new_frag_id = transfer_table(now_frag_info.table_name,now_frag_info.site_id,target_site_id);
-        frag_info new_frag_info = gdd.get_frag_info(new_frag_id);
+        int new_frag_id = transfer_table(get_frag_name(now_frag_info.frag_id),now_frag_info.site_id,target_site_id);
+        frag_info new_frag_info = get_frag_info(new_frag_id);
         target_frag_infos.push_back(new_frag_info);
     }
     return target_frag_infos;
@@ -202,9 +200,9 @@ void query_plan::excute_one_operator(query_tree_node* node, int child_id)
 		string result_sql = "select * from ";
 		query_tree_node* frag_node = node->child[0];
         
-		frag_info frag_information = gdd.get_frag_info(frag_node->frag_id);
+		frag_info frag_information = get_frag_info(frag_node->frag_id);
         
-		string table_name = frag_information.table_name;
+		string table_name = get_frag_name(frag_information.frag_id);
         table_names.push_back(table_name);
         //cout << "table_name in sql:" + table_name << endl;
 		result_sql += table_name;
@@ -289,9 +287,9 @@ void query_plan::excute_one_operator(query_tree_node* node, int child_id)
         result_sql += 'from ';
         // select at1,at2 from ;
         query_tree_node* frag_node = node->child[0];
-        frag_info frag_information = gdd.get_frag_info(frag_node->frag_id);
+        frag_info frag_information = get_frag_info(frag_node->frag_id);
 
-        string table_name = frag_information.table_name;
+        string table_name = get_frag_name(frag_information.frag_id);
 		result_sql += table_name;
 		result_sql += ';';
 		// end getting sql
@@ -328,8 +326,8 @@ void query_plan::excute_one_operator(query_tree_node* node, int child_id)
         cout << "left_child:" + left_child->get_str() << endl;
         cout << "right_child:" + right_child->get_str() << endl;
 
-    	frag_info left_fragment = gdd.get_frag_info(left_child->frag_id);
-    	frag_info right_fragment = gdd.get_frag_info(right_child->frag_id);
+    	frag_info left_fragment = get_frag_info(left_child->frag_id);
+    	frag_info right_fragment = get_frag_info(right_child->frag_id);
 
 
         int left_site = left_fragment.site_id;
@@ -374,10 +372,10 @@ void query_plan::excute_one_operator(query_tree_node* node, int child_id)
         //    cout << "IS WRONG??  2" << endl;
     		string result_sql = "select * from ";
             //cout << "new_frag_id:" << to_string(new_frag_id) << " ,other_frag_id:" + to_string(other_frag_id) << endl;
-            frag_info frag_information_1 = gdd.get_frag_info(new_frag_id);
-            frag_info frag_information_2 = gdd.get_frag_info(other_frag_id);
-    		string table_name1 = frag_information_1.table_name;
-	    	string table_name2 = frag_information_2.table_name;
+            frag_info frag_information_1 = get_frag_info(new_frag_id);
+            frag_info frag_information_2 = get_frag_info(other_frag_id);
+    		string table_name1 = get_frag_name(frag_information_1.frag_id);
+	    	string table_name2 = get_frag_name(frag_information_2.frag_id);
 	    	result_sql += table_name1;
 	    	result_sql += ',';
 	    	result_sql += table_name2;
@@ -435,7 +433,7 @@ void query_plan::excute_one_operator(query_tree_node* node, int child_id)
         //cout << "Is there wrong? 1" << endl;
     	for(int childIndex = 0; childIndex < node->child.size(); childIndex++){
     		query_tree_node* frag_node = node->child[childIndex];
-    		frag_info one_child_fragment = gdd.get_frag_info(frag_node->frag_id);
+    		frag_info one_child_fragment = get_frag_info(frag_node->frag_id);
     		if(childIndex == 0){
     			same_site = one_child_fragment.site_id;
     		}
@@ -460,7 +458,7 @@ void query_plan::excute_one_operator(query_tree_node* node, int child_id)
                // cout << node->child[childIndex]->frag_id << endl;
                 childs_frag_ids.push_back(node->child[childIndex]->frag_id);
               //  cout << to_string(childs_frag_ids[childIndex]) << endl;
-                all_num += gdd.get_frag_info(childs_frag_ids[childIndex]).size;
+                all_num += get_frag_info(childs_frag_ids[childIndex]).size;
             }
        //     cout << "before how_to_transfer..." << endl;
     		vector<frag_info> frag_plan = this->how_to_transfer(childs_frag_ids);
@@ -468,7 +466,7 @@ void query_plan::excute_one_operator(query_tree_node* node, int child_id)
             target_site_id = frag_plan[0].site_id;
             for(int childIndex = 0; childIndex < frag_plan.size(); childIndex++){
                 frag_info one_child_fragment = frag_plan[childIndex];
-                string table_name = one_child_fragment.table_name;
+                string table_name = get_frag_name(one_child_fragment.frag_id);
                 result_sql += table_name;
                 table_names.push_back(table_name);
                 if(childIndex == node->child.size() -1)
@@ -482,9 +480,9 @@ void query_plan::excute_one_operator(query_tree_node* node, int child_id)
     		target_site_id = same_site;
             for(int childIndex = 0; childIndex < node->child.size(); childIndex++){
                 query_tree_node* frag_node = node->child[childIndex];
-                frag_info one_child_fragment = gdd.get_frag_info(frag_node->frag_id);
+                frag_info one_child_fragment = get_frag_info(frag_node->frag_id);
                 all_num += one_child_fragment.size;
-                string table_name = one_child_fragment.table_name;
+                string table_name = get_frag_name(one_child_fragment.frag_id);
                 result_sql += table_name;
                 table_names.push_back(table_name);
                 if(childIndex == node->child.size() -1)

@@ -5,7 +5,7 @@
 #ifndef MYSERVER_LOCAL_SQL_H
 #define MYSERVER_LOCAL_SQL_H
 
-#include <string>
+
 #include <vector>
 #include <iostream>
 #include "thread"
@@ -14,12 +14,13 @@
 #include <sys/socket.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <string>
 #include <pthread.h>
 #include <unistd.h>
 #include <fcntl.h>
+
 #include "../global.h"
-// #include "../excute/site_excution.h"
+#include "../excute/site_excution.h"
 using std::string;
 using std::cout;
 using std::endl;
@@ -36,10 +37,10 @@ public:
     rpc_receive(int);
     ~rpc_receive();
 
-    site_excution site_exc;
-    bool ReceivePlan(string plans);
-    bool ReceiveTable(int frag_id, string frag_content);
-    bool ReceiveResultTable(int frag_id, string frag_content);
+    site_excution site_exc = site_excution(site_id);
+    void ReceivePlan(string plans);
+    void ReceiveTable(int frag_id, string frag_content, string origin_table_name);
+    void ReceiveResultTable(int frag_id, string frag_content, string origin_table_name);
     //vector<string> split(string& src,const string& separator);
 };
 

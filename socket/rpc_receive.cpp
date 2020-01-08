@@ -3,12 +3,13 @@
 //
 #include "rpc_receive.h"
 //#include "../querytree/querytree.h"
+#include "../excute/site_excution.cpp"
 #include "../global.h"
 #include  <map>
 #include <pthread.h>
 using namespace std;
 
-
+#define BUFFER_SIZE 1024
 //int site_id = 1;
 
 rpc_receive::rpc_receive(int site_id){
@@ -64,7 +65,7 @@ void* Data_handle(void * sock_fd, rpc_receive rpc_rec) {
     int new_server_socket = *((int *) sock_fd);
     char buffer[BUFFER_SIZE];
     bzero(buffer, sizeof(buffer));
-    length = recv(new_server_socket, buffer, BUFFER_SIZE, 0);
+    int length = recv(new_server_socket, buffer, BUFFER_SIZE, 0);
     if (length < 0) {
         printf("Server Recieve Operation Failed!\n");
     }
@@ -94,11 +95,11 @@ void* Data_handle(void * sock_fd, rpc_receive rpc_rec) {
         frag_content=frag_content_origin_table_name[0];
         string origin_table_name= frag_content_origin_table_name[1];
         //cout << "Data_handle\t" << plans << endl;
-        rpc_rec.ReceiveTable(frag_id,frag_content);
+        rpc_rec.ReceiveTable(frag_id,frag_content,origin_table_name);
     }
     else if(buffer[0]=='2')
     {
-        tring temp = buffer;
+        string temp = buffer;
         string sfrag_id(temp,1,1);
         int frag_id=atoi(sfrag_id.c_str());
         string frag_content(temp,3,BUFFER_SIZE-3);
@@ -113,7 +114,7 @@ void* Data_handle(void * sock_fd, rpc_receive rpc_rec) {
     }
 }
 
-bool rpc_receive::ReceivePlan(string plans)
+void rpc_receive::ReceivePlan(string plans)
 {
     vector<Operator> results;
     std::cout <<  "have received plan\t" << plans  << endl;
@@ -143,21 +144,26 @@ bool rpc_receive::ReceivePlan(string plans)
         vector<Operator>::iterator it = results.begin();
         //std::cout << (*it).table_names <<endl;
     }
-    this->received_plan = results;
+    //this->received_plan = results;
+    site_exc.sql_queue = results;
+    vector<Operator> to_do = site_exc.check_plan();
+    site_exc.excute_results(to_do);
     //std::cout<< "rpc_receive::received_plan[0].table_names\t" << this->received_plan[0].table_names << endl;
-    return true;
+    //return true;
 }
 
 
-bool rpc_receive::ReceiveTable(int frag_id, string frag_content)
+void rpc_receive::ReceiveTable(int frag_id, string frag_content,string origin_table_name)
 {
     std::cout <<  "have received frag_id \t" << frag_id  << endl;
     std::cout <<  "have received frag_content\t" << frag_content  << endl;
-    this->received_frag_id = frag_id;
-    this->received_frag_content = frag_content;
+    //this->received_frag_id = frag_id;
+    //this->received_frag_content = frag_content;
+    vector<Operator> to_do = site_exc.recieve_and_check(frag_id, frag_content, origin_table_name);
+    site_exc.excute_results(to_do);
 //    string table_name = this->site_exc.mysql.gdd.get_frag_info(frag_id).table_name;
 //    excute_rec_table(table_name, frag_content);
-    return true;
+    //return true;
 }
 void rpc_receive::ReceiveResultTable(int frag_id, string frag_content, string origin_table_name)
 {
@@ -165,8 +171,8 @@ void rpc_receive::ReceiveResultTable(int frag_id, string frag_content, string or
     std::cout <<  "have received frag_content\t" << frag_content  << endl;
  //   this->received_frag_id = frag_id;
  //   this->received_frag_content = frag_content;
-    this->site_exc->recieve_result_table(frag_id, frag_content, origin_table_name);
-    //this->site_exc->excute_results(can_do);
+    this->site_exc.recieve_result_table(frag_id, frag_content, origin_table_name);
+    //this->site_exc.excute_results(can_do);
 //    string table_name = this->site_exc.mysql.gdd.get_frag_info(frag_id).table_name;
 //    excute_rec_table(table_name, frag_content);
    // return true;

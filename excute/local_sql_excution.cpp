@@ -4,7 +4,7 @@
 //
 //  Created by baiping on 2019/12/20.
 //
-#include "../gdd/gdd.h"
+//#include "../gdd/gdd.h"
 #include "local_sql_excution.h"
 #include "../gdd/gdd.cpp"
 using namespace std;
@@ -12,38 +12,38 @@ using namespace std;
 MySql::MySql(string ddb_name, int site_id){
     this->db_name = ddb_name;
     this->site_id = site_id;
-    this->gdd.generate_gdd();
+    //generate_gdd();
 }
 MySql::~MySql(){}
+//
+//vector<string> MySql::split(const string& str, const string& delim) {  
+//    vector<string> res;  
+//    if("" == str) return res;  
+//    //先将要切割的字符串从string类型转换为char*类型  
+//    char * strs = new char[str.length() + 1] ; //不要忘了  
+//    strcpy(strs, str.c_str());   
+// 
+//    char * d = new char[delim.length() + 1];  
+//    strcpy(d, delim.c_str());  
+// 
+//    char *p = strtok(strs, d);  
+//    while(p) {  
+//        string s = p; //分割得到的字符串转换为string类型  
+//        res.push_back(s); //存入结果数组  
+//        p = strtok(NULL, d);  
+//    }  
+// 
+//    return res;  
+//}
 
-vector<string> MySql::split(const string& str, const string& delim) {  
-    vector<string> res;  
-    if("" == str) return res;  
-    //先将要切割的字符串从string类型转换为char*类型  
-    char * strs = new char[str.length() + 1] ; //不要忘了  
-    strcpy(strs, str.c_str());   
- 
-    char * d = new char[delim.length() + 1];  
-    strcpy(d, delim.c_str());  
- 
-    char *p = strtok(strs, d);  
-    while(p) {  
-        string s = p; //分割得到的字符串转换为string类型  
-        res.push_back(s); //存入结果数组  
-        p = strtok(NULL, d);  
-    }  
- 
-    return res;  
-}
 
 
-
-frag_info MySql::load_new_frag_info(int frag_id,string frag_name,vector<string> attr_names,vector<attr_info> attributes,int size,int site_id){
+frag_info MySql::load_new_frag_info(int frag_id,string frag_name,vector<string> attr_names,int size,int site_id){
     frag_info new_frag = frag_info();
     new_frag.frag_id = frag_id;
-    new_frag.table_name = frag_name;
+   // new_frag.table_name = frag_name;
     new_frag.attr_names = attr_names;
-    new_frag.attributes = attributes;
+    //new_frag.attributes = attributes;
     new_frag.size = size;
     new_frag.site_id = site_id;
     return new_frag;
@@ -54,6 +54,7 @@ int MySql::excute_select_sql(string Operator, int result_frag_id){
 
     vector<string> column;
     vector<attr_info> column_attr;
+    vector<string> column_type;
 
     try{
     	MySQL_Driver *driver;
@@ -68,42 +69,29 @@ int MySql::excute_select_sql(string Operator, int result_frag_id){
         connection_properties["port"] = this->port;
         connection_properties["CLIENT_LOCAL_FILES"] = true;
         driver = sql::mysql::get_driver_instance();
-     //   cout << driver << endl;
-      //  cout << "Is ee6" << endl;
-        // con = driver->connect(getMysqlIp(),getUsername(),getPassword());
         con = driver->connect(connection_properties);
-      //  cout << "Is ee7" << endl;
-        //con->setSchema(this->db_name);
-       // cout << "Is ee8" << endl;
         stmt = con->createStatement();
-      //  cout << "Is ee9" << endl;
-
         res_set = stmt->executeQuery(Operator);
-        //cout << db_stmt << endl;
-      //  cout << "Is ee10" << endl;
+        
         int col_cnt = res_set->getMetaData()->getColumnCount();
-       // cout << to_string(col_cnt) << endl;
         string sql = "create table " + temp_table_name + " (";
 	   for(int i = 1; i<= col_cnt; i++){
-	   		attr_info ai;
-            int type = res_set->getMetaData()->getColumnType(i);
+            int type_int = res_set->getMetaData()->getColumnType(i);
             //cout << to_string(type) << endl;
-            if(type == 5)
-	   		  ai.type = "int";
-            if(type == 13)
-              ai.type = "varchar(25)";
-            if(type == 11)
-              ai.type = "varchar(1)";
+            string type;
+            if(type_int == 5)
+	   		  type = "int";
+            else if(type_int == 13)
+              type = "varchar(25)";
+            else if(type_int == 11)
+              type = "varchar(1)";
+            column_type.push_back(type);
 
-            //cout << ai.type << endl;
-	   		//cout << "ddddd" << endl;
-	   		ai.attr_name = res_set->getMetaData()->getColumnName(i);
-	   		//cout << "vvvvvv" << endl;
-	   		column.push_back(ai.attr_name);
-	   		column_attr.push_back(ai);
+            string attr_name = res_set->getMetaData()->getColumnName(i);
+            column.push_back(attr_name);
 
-	   		string col_name = ai.attr_name;
-        		string col_type = ai.type;
+	   		string col_name = attr_name;
+        		string col_type = type;
         		string t = col_name + " " + col_type;
         		sql += t;
 
@@ -124,8 +112,7 @@ int MySql::excute_select_sql(string Operator, int result_frag_id){
         	string sql = "insert into " + temp_table_name + " values (";
 
         	for(int colIndex = 1; colIndex <= col_cnt; colIndex ++){
- 				attr_info col_attribute_info = column_attr[colIndex-1];
- 				string col_type = col_attribute_info.type;
+ 				string col_type = column_type[colIndex-1];
  				if(col_type[0] == 'i')
  					sql += res_set->getString(colIndex);
  				else{
@@ -152,7 +139,7 @@ int MySql::excute_select_sql(string Operator, int result_frag_id){
         delete stmt;
         delete con;
 
-         this->gdd.update_frag_info(result_frag_id,column,column_attr,line_count);
+         update_frag_info(result_frag_id,column,line_count);
          cout << "select execution finished!" << endl; 
     }catch(sql::SQLException &e){
         cout << "# ERR: SQLException in " << __FILE__;
@@ -317,7 +304,7 @@ void MySql::release_all_temp_table(){
         	else{// if the table is the temp table ,release it;
         		string sql = "drop table " + table_name + ";";
         		stmt->executeUpdate(sql);
-        //		this->gdd.drop_frag_info("dTB",table_name);
+        //		drop_frag_info("dTB",table_name);
         	}
         }
         con->close();    
@@ -338,6 +325,7 @@ void MySql::release_all_temp_table(){
 }
 
 void MySql::create_received_table(string table_content, int result_frag_id, string origing_table_name,bool is_result){
+	string temp_table_name;
     if(is_result){
         vector<string> table_names = this->get_table_names();
         int res_id = 0;
@@ -347,15 +335,20 @@ void MySql::create_received_table(string table_content, int result_frag_id, stri
         temp_table_name = "result_table_"+ to_string(res_id);
     }
     else
-        string temp_table_name = "temp_table_" + to_string(result_frag_id);
+        temp_table_name = "temp_table_" + to_string(result_frag_id);
 
-    int origin_frag_id = gdd.from_name_find_frag_id(origing_table_name);
-    frag_info source_table_info = gdd.get_frag_info(origin_frag_id);
-    vector<attr_info> table_attributes = source_table_info.attributes;
-    vector<string> table_attr_name = source_table_info.attr_names;
+    int origin_frag_id = from_name_find_frag_id(origing_table_name);
 
-    vector<string> insert_content = this->split(table_content,"\n");
+    vector<attr_info> table_attributes;
+    vector<string> table_attr_name = get_frag_info(origin_frag_id).attr_names;
+
+    for(int i = 0; i< table_attr_name.size(); i++){
+        attr_info table_att = get_attr_info(origing_table_name, table_attr_name[i]);
+        table_attributes.push_back(table_att);
+    }
+    vector<string> insert_content = split(table_content,"\n");
     vector<string> column = table_attr_name;
+
     vector<attr_info> column_attr = table_attributes;
     try{
        MySQL_Driver *driver;
@@ -433,14 +426,14 @@ void MySql::create_received_table(string table_content, int result_frag_id, stri
         delete res_set;
         delete stmt;
         delete con;
-
+        update_frag_info(result_frag_id,column,line_count);
         // frag_info new_frag = frag_info();
         // new_frag.frag_id = result_frag_id;
         // new_frag.table_name = temp_table_name;
         // new_frag.attributes = table_attributes;
         // new_frag.size = line_count;
         // new_frag.site_id = this->site_id;
-        // this->gdd.create_frag_info(new_frag);
+        // save_frag_info(new_frag);
     }catch(sql::SQLException &e){
         cout << "# ERR: SQLException in " << __FILE__;
         cout << "(" << __FUNCTION__ << ") on line "
@@ -452,159 +445,159 @@ void MySql::create_received_table(string table_content, int result_frag_id, stri
 
 }
 
-int MySql::create_allocated_table(string table_content, int frag_id,string table_name){
-    int temp_id = gdd.get_new_frag_id();
-    string temp_table_name = table_name;
-
-    frag_info source_table_info = gdd.get_frag_info(frag_id);
-    vector<attr_info> table_attributes = source_table_info.attributes;
-
-    vector<string> insert_content = this->split(table_content,"\n");
-
-    try{
-        MySQL_Driver *driver;
-        Connection *con;
-        Statement *stmt;
-        ResultSet *res_set;
-        sql::ConnectOptionsMap connection_properties;
-        connection_properties["hostName"] = this->host+":"+to_string(this->port);
-        connection_properties["userName"] = this->user_name;
-        connection_properties["password"] = this->passwd;
-        connection_properties["port"] = this->port;
-        connection_properties["CLIENT_LOCAL_FILES"] = true;
-        driver = sql::mysql::get_driver_instance();
-        // con = driver->connect(getMysqlIp(),getUsername(),getPassword());
-        con = driver->connect(connection_properties);
-        con->setSchema(this->db_name);
-        stmt = con->createStatement();
-
-        string sql = "create table " + temp_table_name + " (";
-        for(int colIndex = 0; colIndex < table_attributes.size(); colIndex ++){
-            attr_info col_attribute_info = table_attributes[colIndex];
-            string col_name = col_attribute_info.type;
-            string col_type = col_attribute_info.type;
-            string t = col_name + " " + col_type;
-            sql += t;
-            if(colIndex != table_attributes.size())
-                sql += ',';
-            else
-                sql += ')';
-        }
-        stmt->executeUpdate(sql);
-
-        
-
-        int line_count = 0;
-        for(int i = 0;i < insert_content.size();i++){
-            string sql = "insert into " + temp_table_name + " values (";
-            sql += insert_content[i];
-            sql += ")";
-            
-            stmt->executeUpdate(sql);
-            line_count += 1;
-        }
-    
-        // cout << res << endl;
-        con->close();    
-        delete res_set;
-        delete stmt;
-        delete con;
-
-        frag_info new_frag = frag_info();
-        new_frag.frag_id = temp_id;
-        new_frag.table_name = temp_table_name;
-        new_frag.attributes = table_attributes;
-        new_frag.size = line_count;
-        new_frag.site_id = this->site_id;
-        this->gdd.create_frag_info(new_frag);
-    }catch(sql::SQLException &e){
-        cout << "# ERR: SQLException in " << __FILE__;
-        cout << "(" << __FUNCTION__ << ") on line "
-        << __LINE__ << endl;
-        cout << "# ERR: " << e.what();
-        cout << " (MySQL error code: " << e.getErrorCode();
-        cout << ", SQLState: " << e.getSQLState() << " )" << endl;
-    }
-    return temp_id;
-    
-
-}
-
-int MySql::load_datafile(string table_name, vector<string> attr_names, vector<string> attr_types, string key, string sql_file){
-    //string sql_file;
-    // if(table_name == "Student")
-    //     sql_file "./data/student.tsv";
-    // if(table_name == "Course")
-    //     sql_file "./data/course.tsv";
-    // if(table_name == "Teacher")
-    //     sql_file "./data/teacher.tsv";
-    // if(table_name == "Exam")
-    //     sql_file "./data/exam.tsv";
-
-    vector<attr_info> attr_infos;
-    for(int i = 0; i < attr_names.size();i++){
-        attr_info new_attr = attr_info();
-        new_attr.attr_name = attr_names[i];
-        new_attr.type = attr_types[i];
-        if(attr_names[i] == key)
-            new_attr.is_key == 1;
-        attr_infos.push_back(new_attr);
-    }
-    string db_stmt = "";
-    int frag_id;
-    try{
-        MySQL_Driver *driver;
-        Connection *con;
-        Statement *stmt;
-        ResultSet *res_set;
-        bool res = false;
-        sql::ConnectOptionsMap connection_properties;
-        connection_properties["hostName"] = "jdbc:mysql://localhost/";
-        connection_properties["userName"] = this->user_name;
-        connection_properties["password"] = this->passwd;
-        connection_properties["port"] = this->port;
-        connection_properties["CLIENT_LOCAL_FILES"] = true;
-
-        driver = sql::mysql::get_mysql_driver_instance();
-        con = driver->connect(connection_properties);
-        // con = driver->connect(getMysqlIp(),getUsername(),getPassword());
-        con->setSchema(this->db_name);
-        stmt = con->createStatement();
-        db_stmt = "load data infile '" 
-        + sql_file 
-        + "' into table " 
-        + table_name 
-        + " fields terminated by '\t' " 
-        + "lines teminated by '\n';";
-        cout << db_stmt << endl;
-        // string sql = "select * from customer";
-        stmt ->execute(db_stmt);
-        res = true;
-        cout << "load: " << res << endl;
-        con->close();
-        delete stmt;
-        delete con;
-
-        frag_id = this->gdd.get_new_frag_id();
-        string count = "select count(*) from " + table_name +';';
-        res_set = stmt->executeQuery(count);
-        int size = res_set->getInt(1);
-
-        vector<string> attr_names;
-        vector<attr_info> attributes;
-        frag_info new_frag_info = this->load_new_frag_info(frag_id,table_name,attr_names,attr_infos,size,this->site_id);
-
-        this->gdd.create_frag_info(new_frag_info);
-    } catch (sql::SQLException &e){
-        cout << "# ERR: SQLException in " << __FILE__;
-        // cout << "(" << __FUNCTION__ << ") on line "»
-        // << __LINE__ << endl;
-        cout << "# ERR: " << e.what();
-        cout << " (MySQL error code: " << e.getErrorCode();
-        cout << ", SQLState: " << e.getSQLState() << " )" << endl;
-    }   
-    return frag_id;
-}
+//int MySql::create_allocated_table(string table_content, int frag_id,string table_name){
+//    int temp_id = get_new_frag_id();
+//    string temp_table_name = table_name;
+//
+//    frag_info source_table_info = get_frag_info(frag_id);
+//    vector<attr_info> table_attributes = source_table_info.attributes;
+//
+//    vector<string> insert_content = this->split(table_content,"\n");
+//
+//    try{
+//        MySQL_Driver *driver;
+//        Connection *con;
+//        Statement *stmt;
+//        ResultSet *res_set;
+//        sql::ConnectOptionsMap connection_properties;
+//        connection_properties["hostName"] = this->host+":"+to_string(this->port);
+//        connection_properties["userName"] = this->user_name;
+//        connection_properties["password"] = this->passwd;
+//        connection_properties["port"] = this->port;
+//        connection_properties["CLIENT_LOCAL_FILES"] = true;
+//        driver = sql::mysql::get_driver_instance();
+//        // con = driver->connect(getMysqlIp(),getUsername(),getPassword());
+//        con = driver->connect(connection_properties);
+//        con->setSchema(this->db_name);
+//        stmt = con->createStatement();
+//
+//        string sql = "create table " + temp_table_name + " (";
+//        for(int colIndex = 0; colIndex < table_attributes.size(); colIndex ++){
+//            attr_info col_attribute_info = table_attributes[colIndex];
+//            string col_name = col_attribute_info.type;
+//            string col_type = col_attribute_info.type;
+//            string t = col_name + " " + col_type;
+//            sql += t;
+//            if(colIndex != table_attributes.size())
+//                sql += ',';
+//            else
+//                sql += ')';
+//        }
+//        stmt->executeUpdate(sql);
+//
+//        
+//
+//        int line_count = 0;
+//        for(int i = 0;i < insert_content.size();i++){
+//            string sql = "insert into " + temp_table_name + " values (";
+//            sql += insert_content[i];
+//            sql += ")";
+//            
+//            stmt->executeUpdate(sql);
+//            line_count += 1;
+//        }
+//    
+//        // cout << res << endl;
+//        con->close();    
+//        delete res_set;
+//        delete stmt;
+//        delete con;
+//
+//        frag_info new_frag = frag_info();
+//        new_frag.frag_id = temp_id;
+//        new_frag.table_name = temp_table_name;
+//        new_frag.attributes = table_attributes;
+//        new_frag.size = line_count;
+//        new_frag.site_id = this->site_id;
+//        save_frag_info(new_frag);
+//    }catch(sql::SQLException &e){
+//        cout << "# ERR: SQLException in " << __FILE__;
+//        cout << "(" << __FUNCTION__ << ") on line "
+//        << __LINE__ << endl;
+//        cout << "# ERR: " << e.what();
+//        cout << " (MySQL error code: " << e.getErrorCode();
+//        cout << ", SQLState: " << e.getSQLState() << " )" << endl;
+//    }
+//    return temp_id;
+//    
+//
+//}
+//
+//int MySql::load_datafile(string table_name, vector<string> attr_names, vector<string> attr_types, string key, string sql_file){
+//    //string sql_file;
+//    // if(table_name == "Student")
+//    //     sql_file "./data/student.tsv";
+//    // if(table_name == "Course")
+//    //     sql_file "./data/course.tsv";
+//    // if(table_name == "Teacher")
+//    //     sql_file "./data/teacher.tsv";
+//    // if(table_name == "Exam")
+//    //     sql_file "./data/exam.tsv";
+//
+//    vector<attr_info> attr_infos;
+//    for(int i = 0; i < attr_names.size();i++){
+//        attr_info new_attr = attr_info();
+//        new_attr.attr_name = attr_names[i];
+//        new_attr.type = attr_types[i];
+//        if(attr_names[i] == key)
+//            new_attr.is_key == 1;
+//        attr_infos.push_back(new_attr);
+//    }
+//    string db_stmt = "";
+//    int frag_id;
+//    try{
+//        MySQL_Driver *driver;
+//        Connection *con;
+//        Statement *stmt;
+//        ResultSet *res_set;
+//        bool res = false;
+//        sql::ConnectOptionsMap connection_properties;
+//        connection_properties["hostName"] = "jdbc:mysql://localhost/";
+//        connection_properties["userName"] = this->user_name;
+//        connection_properties["password"] = this->passwd;
+//        connection_properties["port"] = this->port;
+//        connection_properties["CLIENT_LOCAL_FILES"] = true;
+//
+//        driver = sql::mysql::get_mysql_driver_instance();
+//        con = driver->connect(connection_properties);
+//        // con = driver->connect(getMysqlIp(),getUsername(),getPassword());
+//        con->setSchema(this->db_name);
+//        stmt = con->createStatement();
+//        db_stmt = "load data infile '" 
+//        + sql_file 
+//        + "' into table " 
+//        + table_name 
+//        + " fields terminated by '\t' " 
+//        + "lines teminated by '\n';";
+//        cout << db_stmt << endl;
+//        // string sql = "select * from customer";
+//        stmt ->execute(db_stmt);
+//        res = true;
+//        cout << "load: " << res << endl;
+//        con->close();
+//        delete stmt;
+//        delete con;
+//
+//        frag_id = get_new_frag_id();
+//        string count = "select count(*) from " + table_name +';';
+//        res_set = stmt->executeQuery(count);
+//        int size = res_set->getInt(1);
+//
+//        vector<string> attr_names;
+//        vector<attr_info> attributes;
+//        frag_info new_frag_info = this->load_new_frag_info(frag_id,table_name,attr_names,attr_infos,size,this->site_id);
+//
+//        save_frag_info(new_frag_info);
+//    } catch (sql::SQLException &e){
+//        cout << "# ERR: SQLException in " << __FILE__;
+//        // cout << "(" << __FUNCTION__ << ") on line "»
+//        // << __LINE__ << endl;
+//        cout << "# ERR: " << e.what();
+//        cout << " (MySQL error code: " << e.getErrorCode();
+//        cout << ", SQLState: " << e.getSQLState() << " )" << endl;
+//    }   
+//    return frag_id;
+//}
 
 // map<string,int> MySQL::do_fragment(vector<string> Operator, int fragment_num,string table_name){
 //     map<string,int> new_temp_id;

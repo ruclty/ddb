@@ -2,8 +2,8 @@
 // Created by dyj on 2019/12/27.
 //
 
-#ifndef MYSERVER_RPCCALL_H
-#define MYSERVER_RPCCALL_H
+#ifndef _RPC_SENT_H_
+#define _RPC_SENT_H_
 
 #include <string>
 #include <vector>
@@ -27,8 +27,8 @@ using std::string;
 using std::ofstream;
 using std::vector;
 
-void SendResult(int frag_id, string frag_content, string origin_table_name,int target_site_id);
-void SendPlan(vector<Operator> plan, int target_site_id);
+void SendResultTable(int frag_id, string frag_content, string origin_table_name,int target_site_id);
+void SendPlan(vector<Operator> plan, int target_site_id, int sourceId);
 void SendTable(int frag_id, string frag_content, string origin_table_name, int target_site_id);
 void socket_client(string target_site_ip,string results);
 //string mapIdtoIp(int id);

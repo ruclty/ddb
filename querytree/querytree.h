@@ -53,7 +53,6 @@ private:
 	map<int, query_tree_node*> leaf_frag;
 
 public:
-	GDD gdd = GDD();
 	query_tree(string&);
 	~query_tree(); 
 

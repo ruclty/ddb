@@ -3,7 +3,7 @@
 #include <string>
 #include "../querytree/querytree.h"
 #include "../global.h"
-#include "../socket/rpc_sent.h"
+#include "../socket/rpc_sent.cpp"
 #include "../gdd/gdd.h"
 #include <vector>
 #include <map>
@@ -25,7 +25,7 @@ class query_plan{
     	vector<frag_info> how_to_transfer(vector<int>);
     	vector<frag_info> how_transfer(vector<int>);
 		void excute_one_operator(query_tree_node*, int);
-		GDD gdd = GDD();
+//        GDD gdd = GDD();
 		int semi_join(int, int, int);
 
 
