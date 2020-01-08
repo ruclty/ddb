@@ -125,8 +125,6 @@ string query_tree_node::get_str(){
 query_tree::query_tree(string& sql) {
 	this->sql = sql;
 	this->root = NULL;
-    this->gdd.generate_gdd();
-    this->gdd.print();
 }
 
 query_tree::~query_tree(){}
@@ -376,13 +374,14 @@ void query_tree::frag_table(){
         for (int i = 0;i < join->child.size();i ++){
             query_tree_node* child = join->child[i];
             if(child->node_type == TABLE){
-                table_info table = gdd.get_table_info(child->table_names[0]);
-                if(table.h_frag.size() > 0){
+                table_info table = get_table_info(child->table_names[0]);
+                if(table.h_frags.size() > 0){
                     query_tree_node* union_node = new query_tree_node;
                     union_node->node_type = UNION;
                     union_node->table_names.push_back(table.table_name);
                     union_node->parent = join;
-                    for(auto frag:table.h_frag){
+                    for(auto frag_id:table.h_frags){
+                        frag_info frag = get_frag_info(frag_id);
                         query_tree_node* frag_node = new query_tree_node;
                         frag_node->node_type = FRAGMENT;
                         frag_node->frag_id = frag.frag_id;
@@ -394,25 +393,29 @@ void query_tree::frag_table(){
                     }
                     join->child[i] = union_node;
                 }
-                if(table.v_frag.size() > 0){
+                if(table.v_frags.size() > 0){
                     query_tree_node* join_node = new query_tree_node;
                     join_node->node_type = JOIN;
                     join_node->table_names.push_back(table.table_name);
                     join_node->parent = join;
                     query_tree_node* l_frag = new query_tree_node;
-                    l_frag->frag_id = table.v_frag[0].frag_id;
+                    frag_info v_frag0 = get_frag_info(table.v_frags[0]);
+                    frag_info v_frag1 = get_frag_info(table.v_frags[1]);
+                    l_frag->frag_id = v_frag0.frag_id;
                     l_frag->node_type = FRAGMENT;
                     l_frag->parent = join_node;
                     join_node->child.push_back(l_frag);
                     frag_nodes.push_back(l_frag);
                     query_tree_node* r_frag = new query_tree_node;
-                    r_frag->frag_id = table.v_frag[1].frag_id;
+                    r_frag->frag_id = v_frag1.frag_id;
                     r_frag->node_type = FRAGMENT;
                     r_frag->parent = join_node;
                     frag_nodes.push_back(r_frag);
                     join_node->child.push_back(r_frag);
-                    predicateT pred = {table.v_frag[0].table_name, table.v_frag[0].attr_names[0], 
-                                        EQ, table.v_frag[1].attr_names[0], table.v_frag[1].table_name};
+
+                    string key = get_table_info(v_frag0.table_name).key;
+                    predicateT pred = {v_frag0.table_name, key, 
+                                        EQ, key, v_frag1.table_name};
                     join_node->pred_type = TAB;
                     join_node->predt.push_back(pred);
                     join->child[i] = join_node;
@@ -429,7 +432,7 @@ void query_tree::push_select(){
         sel->parent = NULL;
         sel->child.clear();
         for(auto frag: frag_nodes){
-            frag_info frag_ = gdd.get_frag_info(frag->frag_id);
+            frag_info frag_ = get_frag_info(frag->frag_id);
             int index = frag->parent->get_child_index(frag);
             if(sel->table_names[0] != frag_.table_name)
                 continue;
