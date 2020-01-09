@@ -8,9 +8,9 @@ using namespace std;
 
 site_excution::site_excution(int site_id){
 	this->site_id = site_id;
-	//string ddb_name = "site"+to_string(site_id);
-	//cout << ddb_name << endl;
-	//this->mysql = MySql(ddb_name,site_id);
+	string ddb_name = "site"+to_string(site_id);
+	cout << ddb_name << endl;
+	this->mysql = MySql(ddb_name,site_id);
 	this->table_queue = this->mysql.get_table_names();
 }
 

@@ -7,10 +7,8 @@ using namespace std;
 
 
 int main(){
-    rpc_receive rec = rpc_receive(2);
-<<<<<<< HEAD
-    startListening(6666, &rec);
-=======
+    rpc_receive rec = rpc_receive(1);
+
     startListening(7777, &rec);
->>>>>>> 59d44a94deca7defae0f836f20b983581b51a13a
+
 }

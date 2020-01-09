@@ -14,7 +14,7 @@ using namespace std;
 
 rpc_receive::rpc_receive(int site_id){
     this->site_id = site_id;
-    //this->site_exc = site_excution(site_id);
+    this->site_exc = site_excution(site_id);
 }
 rpc_receive::~rpc_receive(){}
 

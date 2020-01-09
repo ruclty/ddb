@@ -16,24 +16,24 @@ using namespace std;
 string mapIdtoIp(int id,int this_site)
 {
 	std::map<int ,string> maplive;
-    if(this_site == 1 | this_site == 4){
+    if(this_site == 1){
 		maplive[1]="127.0.0.1";//map中最简单最常用的插入添加！
-    		maplive[4]="127.0.0.1";
+    		maplive[4]="10.77.70.128";
     		maplive[2]="10.77.70.127";
     		maplive[3]="10.77.70.128";
     }
     if(this_site == 2)
     {
     		maplive[1]="10.77.70.126";//map中最简单最常用的插入添加！
-    		maplive[4]="10.77.70.126";
+    		maplive[4]="10.77.70.128";
     		maplive[2]="127.0.0.1";
     		maplive[3]="10.77.70.128";
     	}
    
-    if(this_site == 3)
+    if(this_site == 3 | this_site == 4)
     {
     		maplive[1]="10.77.70.126";//map中最简单最常用的插入添加！
-    		maplive[4]="10.77.70.126";
+    		maplive[4]="127.0.0.1";
     		maplive[2]="10.77.70.127";
     		maplive[3]="127.0.0.1";
     	}

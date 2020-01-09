@@ -17,7 +17,7 @@ struct result{
 
 class site_excution{
 	public:
-		int site_id = 2;
+		int site_id;
 
 		site_excution(int);
 		~site_excution();

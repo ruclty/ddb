@@ -13,7 +13,8 @@ using namespace std;
 
 int main(){
     
-    string sql = "select student.id,student.name,exam.mark,course.name from student,exam,course where student.id=exam.student_id and exam.course_id=course.id and student.id>1060000 and course.location!='CB-3'";
+//    string sql = "select student.id,student.name,exam.mark,course.name from student,exam,course where student.id=exam.student_id and exam.course_id=course.id and student.id>1060000 and course.location!='CB-3'";
+	string sql = "select * from student where student.id<1000010";
     cout << sql << endl;
     //sql="select * from a where a.a!='a'";
     query_tree tree(sql);
