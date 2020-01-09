@@ -21,7 +21,6 @@ int query_plan::semi_join(int target_site, int frag_id1, int frag_id2){
 
 void query_plan::transfer_plan(){
     for(int i=1;i<=4;i++){
-    	   cout << "send_plan_to:" + to_string(i) << endl;
         SendPlan(this->plan[i], i, 5);
     }
 }
@@ -82,11 +81,11 @@ int query_plan::transfer_table(string table_name, int source_site_id, int excute
     // now_sql.result_frag_id = temp_frag_id;
     // this->plan[source_site_id].push_back(now_sql);
 
-    Operator now_sql1;
-    now_sql1.content = to_string(source_site_id);
-    now_sql1.ope = REC;
-    now_sql1.result_frag_id = new_frag_id;
-    this->plan[excute_site_id].push_back(now_sql1);
+//    Operator now_sql1;
+//    now_sql1.content = to_string(source_site_id);
+//    now_sql1.ope = REC;
+//    now_sql1.result_frag_id = new_frag_id;
+//    this->plan[excute_site_id].push_back(now_sql1);
     return new_frag_id;
 }
 

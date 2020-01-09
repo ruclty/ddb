@@ -155,9 +155,9 @@ void rpc_receive::ReceivePlan(string plans)
         //std::cout << (*it).table_names <<endl;
     }
     //this->received_plan = results;
-    site_exc.sql_queue = results;
-    vector<Operator> to_do = site_exc.check_plan();
-    site_exc.excute_results(to_do);
+    this->site_exc.sql_queue = results;
+    vector<Operator> to_do = this->site_exc.check_plan();
+    this->site_exc.excute_results(to_do);
     //std::cout<< "rpc_receive::received_plan[0].table_names\t" << this->received_plan[0].table_names << endl;
     //return true;
 }

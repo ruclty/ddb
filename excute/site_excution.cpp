@@ -8,9 +8,9 @@ using namespace std;
 
 site_excution::site_excution(int site_id){
 	this->site_id = site_id;
-	string ddb_name = "site"+to_string(site_id);
+	//string ddb_name = "site"+to_string(site_id);
 	//cout << ddb_name << endl;
-	this->mysql = MySql(ddb_name,site_id);
+	//this->mysql = MySql(ddb_name,site_id);
 	this->table_queue = this->mysql.get_table_names();
 	for(int i=0; i< table_queue.size(); i++)
 		cout << this->table_queue[i] << endl;
@@ -29,36 +29,38 @@ vector<Operator> site_excution::check_plan(){
 	for(int i=0; i< this->sql_queue.size(); i++){
 		// Operator now_sql;
 		// now_sql.content = this->sql_queue;
-		//cout << "find is some table can exc" << endl;
+		cout << "find is some table can exc" << endl;
 		bool can_excute = true;
 		this->sql_queue[i].id = i;
+		cout << to_string(sql_queue[i].table_names.size()) << endl;
 		for(int j=0; j< sql_queue[i].table_names.size(); j++){
 			bool no_in = false;
-		//	cout << sql_queue[i].table_names[j] << endl;
+			cout << "sql:talbe:"+sql_queue[i].table_names[j] << endl;
+			if(can_excute == false)
+				break;
 			for(int k = 0; k < this->table_queue.size();k++){// find table from table_queue
+				cout << "table_queue_table:" + table_queue[k] << endl;
 				if(table_queue[k] == sql_queue[i].table_names[j]){
 					no_in = true;
-		//			cout << sql_queue[i].table_names[j] << endl;
-					break;
+					cout <<"can excute:" + sql_queue[i].table_names[j] << endl;
+					break; 
 				}
 			}
 			if(no_in == false){// if not_find table ,this sql can't excute;
 				can_excute = false;
 				break;
 			}
-			if(no_in == true){// if not_find table ,this sql can't excute;
-				can_excute = true;
-				break;
-			}
 			
 		}
-		if(can_excute == true)
+		if(can_excute == true){
+			cout << "can excute!!!!!!!!!!!"+ sql_queue[i].content << endl;
 			results.push_back(sql_queue[i]);
+		}
 		
 	}
-	cout << to_string(results.size()) << endl;
+	cout <<"res_size:"+ to_string(results.size()) << endl;
 	for(int i=0;i<results.size();i++)
-		cout << "result op:" + results[i].table_names[0] << endl;
+		cout << "result op:" + to_string(results[i].id) << endl;
 	return results;
 
 }
