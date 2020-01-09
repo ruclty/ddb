@@ -28,7 +28,7 @@ void startListening(int );
 
 // class rpc_receive{
 // private:
-//     int site_id = 1;
+//     int site_id = 2;
 //     int received_frag_id;
 //     string received_frag_content;
 //     vector<Operator> received_plan;

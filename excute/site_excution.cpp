@@ -1,15 +1,17 @@
 #include <queue>
 #include <iostream>
 #include "../socket/rpc_sent.cpp"
+#include "site_excution.h"
 using namespace std;
 
 #define MAIN_SITE_ID 1
 
 site_excution::site_excution(int site_id){
 	this->site_id = site_id;
-	string ddb_name = "site"+to_string(site_id);
-	this->mysql = MySql(ddb_name,site_id);
-	this->table_queue = mysql.get_table_names();
+	//string ddb_name = "site"+to_string(site_id);
+	//cout << ddb_name << endl;
+	//this->mysql = MySql(ddb_name,site_id);
+	this->table_queue = this->mysql.get_table_names();
 }
 
 site_excution::~site_excution(){}

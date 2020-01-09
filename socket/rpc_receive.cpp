@@ -14,7 +14,7 @@ using namespace std;
 
 rpc_receive::rpc_receive(int site_id){
     this->site_id = site_id;
-    this->site_exc = site_excution(site_id);
+    //this->site_exc = site_excution(site_id);
 }
 rpc_receive::~rpc_receive(){}
 
@@ -61,7 +61,17 @@ OPERATORTYPE mapStringtoEnum(string op)
     return l_it->second;
 }
 
-void* Data_handle(void * sock_fd, rpc_receive rpc_rec) {
+struct args{
+    void * sock_fd;
+    rpc_receive * rpc_rec;
+};
+
+void* Data_handle(void * arg) {
+    args *pstru;
+    pstru = (struct args*) arg;
+    void * sock_fd = pstru->sock_fd;
+    rpc_receive * rpc_rec = pstru->rpc_rec;
+
     int new_server_socket = *((int *) sock_fd);
     char buffer[BUFFER_SIZE];
     bzero(buffer, sizeof(buffer));
@@ -82,7 +92,7 @@ void* Data_handle(void * sock_fd, rpc_receive rpc_rec) {
         string plans(temp,1,BUFFER_SIZE-1);
         //string plans = operation;
         cout << "Data_handle plans\t" << plans << endl;
-        rpc_rec.ReceivePlan(plans);
+        rpc_rec->ReceivePlan(plans);
     }
     else if(buffer[0]=='1')
     {
@@ -95,7 +105,7 @@ void* Data_handle(void * sock_fd, rpc_receive rpc_rec) {
         frag_content=frag_content_origin_table_name[0];
         string origin_table_name= frag_content_origin_table_name[1];
         //cout << "Data_handle\t" << plans << endl;
-        rpc_rec.ReceiveTable(frag_id,frag_content,origin_table_name);
+        rpc_rec->ReceiveTable(frag_id,frag_content,origin_table_name);
     }
     else if(buffer[0]=='2')
     {
@@ -108,7 +118,7 @@ void* Data_handle(void * sock_fd, rpc_receive rpc_rec) {
         frag_content=frag_content_origin_table_name[0];
         string origin_table_name= frag_content_origin_table_name[1];
         
-        rpc_rec.ReceiveResultTable(frag_id,frag_content,origin_table_name);
+        rpc_rec->ReceiveResultTable(frag_id,frag_content,origin_table_name);
         //cout << "Data_handle\t" << plans << endl;
         //rpc_rec.excute_result_table(frag_id,frag_content);
     }
@@ -177,7 +187,7 @@ void rpc_receive::ReceiveResultTable(int frag_id, string frag_content, string or
 //    excute_rec_table(table_name, frag_content);
    // return true;
 }
-void startListening(int port){
+void startListening(int port, rpc_receive * rpc_rec){
     // set socket's address information
     // 声明并初始化一个服务器端的socket地址结构
     // 设置一个socket地址结构server_addr,代表服务器internet的地址和端口
@@ -223,7 +233,8 @@ void startListening(int port){
             continue;
         }
         printf("A new connection occurs!\n");
-        if (pthread_create(&thread_id,NULL,&Data_handle,(void *)(&new_server_socket)) == -1)  //创建一个线程
+        struct args arg = args{(void *)(&new_server_socket), rpc_rec};
+        if (pthread_create(&thread_id,NULL,&Data_handle,(void *)(&arg)) == -1)  //创建一个线程
         {
             fprintf(stderr,"pthread_create error!\n");
             break;                                  //结束循环

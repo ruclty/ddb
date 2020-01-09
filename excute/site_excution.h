@@ -1,8 +1,12 @@
+#ifndef SITE_EXCU__
+#define SITE_EXCU__
+
 #include <queue>
 #include <iostream>
-//#include "../global.h"
+#include "../global.h"
 #include "../rpc/rpc_sent.h"
-#include "./local_sql_excution.h"
+#include "./local_sql_excution.cpp"
+#include "../gdd/gdd.cpp"
 using namespace std;
 
 
@@ -13,14 +17,14 @@ struct result{
 
 class site_excution{
 	public:
-		int site_id;
+		int site_id = 2;
 
 		site_excution(int);
 		~site_excution();
 		vector<Operator> sql_queue;
 		vector<string> table_queue;
 	
-		MySql mysql = MySql(" ",site_id);
+		MySql mysql = MySql("site2",site_id);
 
 		vector<Operator> check_plan();
 		vector<Operator> recieve_plan(vector<Operator>);
@@ -30,3 +34,6 @@ class site_excution{
 		//void get_queue(vector<Operator>);
 		//vector<string> get_table_names(string sql);
 };
+
+
+#endif
