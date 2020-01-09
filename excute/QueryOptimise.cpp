@@ -21,6 +21,7 @@ int query_plan::semi_join(int target_site, int frag_id1, int frag_id2){
 
 void query_plan::transfer_plan(){
     for(int i=1;i<=4;i++){
+    	   cout << to_string(plan[i].size()) << endl;
         SendPlan(this->plan[i], i, 5);
     }
 }
@@ -45,7 +46,7 @@ int query_plan::transfer_sql(string sql, int source_site_id, int excute_site_id,
     now_sql.result_frag_id = new_frag_id;
     now_sql.table_names = table_names;
     now_sql.is_end = 0;
-    this->plan[source_site_id].push_back(now_sql);
+    this->plan[excute_site_id].push_back(now_sql);
     return new_frag_id;
 }
 int query_plan::transfer_table(string table_name, int source_site_id, int excute_site_id){
@@ -315,7 +316,10 @@ void query_plan::excute_one_operator(query_tree_node* node, int child_id)
         else{
         	 cout << "Is wrong? q" << endl;
             vector<Operator> tmp = this->plan[excute_site];
+            cout << ">><<<>><<" << endl;
+            cout << to_string(plan[excute_site].size()) << endl;
             this->plan[excute_site][tmp.size()-1].is_end = 1;
+            cout << "xfxfdfds" << endl;
             this->transfer_plan();
         }
     }
