@@ -21,9 +21,8 @@ int query_plan::semi_join(int target_site, int frag_id1, int frag_id2){
 
 void query_plan::transfer_plan(){
     for(int i=1;i<=4;i++){
-    	   if(i == 1)
-    	   	continue;
-        SendPlan(this->plan[i], i, 1);
+    	   cout << "send_plan_to:" + to_string(i) << endl;
+        SendPlan(this->plan[i], i, 5);
     }
 }
 
@@ -270,10 +269,10 @@ void query_plan::excute_one_operator(query_tree_node* node, int child_id)
 	if(node_type == PROJECT){
 		// get sql
 		string result_sql = "select ";
-        //cout << "Is wrong? 1" << endl;
+        cout << "Is wrong? 1" << endl;
         for(int attributeIndex = 0; attributeIndex < node->attr_names.size(); attributeIndex++){
         	result_sql += node->attr_names[attributeIndex];
-            ////cout << "result_sql" + result_sql << endl;
+            cout << "result_sql" + result_sql << endl;
         	if(attributeIndex < node->attr_names.size() -1){
         	    result_sql += ',';
             }
@@ -282,24 +281,32 @@ void query_plan::excute_one_operator(query_tree_node* node, int child_id)
             }
 
         }
-        //cout << "Is wrong? 2" << endl;
+        cout << "Is wrong? 2" << endl;
         // select at1,at2 ;
         result_sql += 'from ';
         // select at1,at2 from ;
         query_tree_node* frag_node = node->child[0];
+        cout << "Is wrong? 2w42" << endl;
+        cout << to_string(frag_node->frag_id) << endl;
         frag_info frag_information = get_frag_info(frag_node->frag_id);
-
+		cout << "Is wrong? qwewwqe" << endl;
         string table_name = get_frag_name(frag_information.frag_id);
+        cout << "Is wrong? gfdsfdsf" << endl;
 		result_sql += table_name;
 		result_sql += ';';
 		// end getting sql
 		// start to transfer the sql to local site, and get result after it excuted;
+		cout << "Is wrong? qrewter" << endl;
 		int excute_site = frag_information.site_id;
+		cout << "Is wrong? qwrefdfffghg" << endl;
         vector<string> table_names;
         table_names.push_back(table_name);
+         cout << "Is wrong? e" << endl;
 		int result_frag_id = transfer_sql(result_sql, MAIN_SITE_ID, excute_site,table_names);
+		 cout << "Is wrong? r" << endl;
 		// change the node type from project to fragment;
         if(node->parent){
+        	 cout << "Is wrong? y" << endl;
             query_tree_node* new_node = new query_tree_node();
             new_node->node_type = FRAGMENT;
             new_node->frag_id = result_frag_id;
@@ -307,6 +314,7 @@ void query_plan::excute_one_operator(query_tree_node* node, int child_id)
             node->parent->child[child_id] = new_node;
         }
         else{
+        	 cout << "Is wrong? q" << endl;
             vector<Operator> tmp = this->plan[excute_site];
             this->plan[excute_site][tmp.size()-1].is_end = 1;
             this->transfer_plan();
