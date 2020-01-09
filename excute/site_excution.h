@@ -1,8 +1,12 @@
+#ifndef SITE_EXCU__
+#define SITE_EXCU__
+
 #include <queue>
 #include <iostream>
-//#include "../global.h"
+#include "../global.h"
 #include "../rpc/rpc_sent.h"
-#include "./local_sql_excution.h"
+#include "./local_sql_excution.cpp"
+#include "../gdd/gdd.cpp"
 using namespace std;
 
 
@@ -30,3 +34,6 @@ class site_excution{
 		//void get_queue(vector<Operator>);
 		//vector<string> get_table_names(string sql);
 };
+
+
+#endif
