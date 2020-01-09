@@ -10,12 +10,19 @@
 #include <map>
 #include <regex>
 
-#define SERVER_PORT 6666
+//#define SERVER_PORT 6666
 
 using namespace std;
+
+std::map<int,int> SERVER_PORT = {
+	{1,6666},{2,6666},{3,6666},{4,7777},{5,8888}
+};
+
+
 string mapIdtoIp(int id,int this_site)
 {
 	std::map<int ,string> maplive;
+
     if(this_site == 1){
 		maplive[1]="127.0.0.1";//map中最简单最常用的插入添加！
     		maplive[4]="10.77.70.128";
@@ -37,6 +44,7 @@ string mapIdtoIp(int id,int this_site)
     		maplive[2]="10.77.70.127";
     		maplive[3]="127.0.0.1";
     	}
+
 
     std::map<int ,string >::iterator l_it;;
     l_it=maplive.find(id);

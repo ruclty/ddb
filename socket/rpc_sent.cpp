@@ -56,11 +56,12 @@ void SendPlan(vector<Operator> plan, int target_site_id, int sourceId)
     }
     //call
     string target_site_ip=mapIdtoIp(target_site_id, sourceId);
-    socket_client(target_site_ip,results);
+    socket_client(target_site_id,results,sourceId);
 }
 
-void socket_client(string target_site_ip,string results)
+void socket_client(int target_site_id,string results,int sourceId)
 {
+    string target_site_ip=mapIdtoIp(target_site_id, sourceId);
     cout << "socket_client"<<endl;
     char **argv;
     argv = new char*[1];
@@ -97,7 +98,7 @@ void socket_client(string target_site_ip,string results)
         printf("Server IP Address Error!\n");
         exit(1);
     }
-    server_addr.sin_port = htons(SERVER_PORT);
+    server_addr.sin_port = htons(SERVER_PORT[target_site_id]); 
     socklen_t server_addr_length = sizeof(server_addr);
     // 向服务器发起连接请求，连接成功后client_socket代表客户端和服务器端的一个socket连接
     if (connect(client_socket, (struct sockaddr*)&server_addr, server_addr_length) < 0)
@@ -112,15 +113,14 @@ void socket_client(string target_site_ip,string results)
     // 关闭与服务器端的连接
     close(client_socket);
 }
-void SendTable(int frag_id, string frag_content, string origin_table_name, int target_site_id, int sourceId)
-{
+void SendTable(int frag_id, string frag_content, string origin_table_name, int target_site_id, int sourceId){
     cout <<  "start SendTable \t" << endl;
     string target_site_ip=mapIdtoIp(target_site_id, sourceId);
     string frag_content_and_frag_id;
     string str=to_string(frag_id);
     frag_content_and_frag_id='1'+str+'#'+frag_content +'#' + origin_table_name;
     cout <<  "frag_content_and_frag_id\t" << frag_content_and_frag_id << endl;
-    socket_client(target_site_ip,frag_content_and_frag_id);
+    socket_client(target_site_id,frag_content_and_frag_id,sourceId);
 }
 void SendResultTable(int frag_id, string frag_content, string origin_table_name,  int target_site_id, int sourceId)
 {
@@ -129,7 +129,7 @@ void SendResultTable(int frag_id, string frag_content, string origin_table_name,
     string str=to_string(frag_id);
     frag_content_and_frag_id='2'+str+'#'+frag_content +'#' +origin_table_name ;
     cout <<  "frag_content_and_frag_id\t" << frag_content_and_frag_id << endl;
-    socket_client(target_site_ip,frag_content_and_frag_id);
+    socket_client(target_site_id,frag_content_and_frag_id,sourceId);
 /*
     rpc::client client(target_site_ip,target_port);
     bool ok = client.call("excute_result_table",frag_id, frag_content).as<bool>();

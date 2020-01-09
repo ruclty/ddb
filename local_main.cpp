@@ -9,6 +9,6 @@ using namespace std;
 int main(){
     rpc_receive rec = rpc_receive(1);
 
-    startListening(7777, &rec);
+    startListening(6666, &rec);
 
 }

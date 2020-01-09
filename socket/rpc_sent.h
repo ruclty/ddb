@@ -30,6 +30,6 @@ using std::vector;
 void SendResultTable(int frag_id, string frag_content, string origin_table_name,int target_site_id);
 void SendPlan(vector<Operator> plan, int target_site_id, int sourceId);
 void SendTable(int frag_id, string frag_content, string origin_table_name, int target_site_id);
-void socket_client(string target_site_ip,string results);
+void socket_client(int ,string,int );
 //string mapIdtoIp(int id);
 #endif //MYSERVER_RPCCALL_H
