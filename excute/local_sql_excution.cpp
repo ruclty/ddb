@@ -1,3 +1,6 @@
+#ifndef _LOCAL_SQL_EXCUTION_CPP_
+#define _LOCAL_SQL_EXCUTION_CPP_
+
 //
 //  local_sql_excution.cpp
 //  
@@ -610,4 +613,4 @@ void MySql::create_received_table(string table_content, int result_frag_id, stri
 // }
 
 
-
+#endif
