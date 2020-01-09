@@ -33,7 +33,7 @@ int main(){
     plan.excute_query_plan(root,0);
 
     rpc_receive rec = rpc_receive(1);
-    startListening(6666);
+    startListening(6666, &rec);
 
   //  MySql mysql(2);
 //    mysql.load_datafile("./data/course.tsv")
