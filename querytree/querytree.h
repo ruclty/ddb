@@ -65,7 +65,8 @@ public:
 	void optimize(query_tree_node*);
 	
 	void optimize(query_tree_node*, query_tree_node*);
-	void frag_table(void);
+	void frag_table();
+    void frag_table_node(query_tree_node*);
 	void push_select(void);
 	void prune_join_node(query_tree_node*);
 	void prune_join(void);

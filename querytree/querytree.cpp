@@ -425,46 +425,66 @@ void query_tree::frag_table(){
     }
 }
 
-void query_tree::push_select(){
-    for (auto sel: sel_nodes){
-        sel->parent->child[0] = sel->child[0];
-        sel->child[0]->parent = sel->parent;
-        sel->parent = NULL;
-        sel->child.clear();
-        for(auto frag: frag_nodes){
-            frag_info frag_ = get_frag_info(frag->frag_id);
-            int index = frag->parent->get_child_index(frag);
-            if(sel->table_names[0] != frag_.table_name)
-                continue;
-            if(frag_.frag_type == H){
-                if(conflict_node(sel, frag) || conflict_node(frag, sel)){
-                    frag->parent->child[index] = NULL;
-                    frag->parent->remove_null_child();
-                }
-                else{
-                    query_tree_node* new_sel = sel->copy();
-                    new_sel->child.clear();
-                    new_sel->parent = frag->parent;
-                    new_sel->parent->child[index] = new_sel;
-                    frag->parent = new_sel;
-                    new_sel->child.push_back(frag);
-                }
+void query_tree::frag_table_node(query_tree_node* node){
+    if(node->node_type == TABLE){
+        query_tree_node* parent = node->parent;
+        int index = parent->get_child_index(node);
+        table_info table = get_table_info(node->table_names[0]);
+        if(table.h_frags.size() > 0){
+            query_tree_node* union_node = new query_tree_node;
+            union_node->node_type = UNION;
+            union_node->table_names.push_back(table.table_name);
+            union_node->parent = parent;
+            for(auto frag_id:table.h_frags){
+                frag_info frag = get_frag_info(frag_id);
+                query_tree_node* frag_node = new query_tree_node;
+                frag_node->node_type = FRAGMENT;
+                frag_node->frag_id = frag.frag_id;
+                frag_node->parent = union_node;
+                frag_node->preds = frag.preds;
+                frag_node->predv = frag.predv;
+                union_node->child.push_back(frag_node);
+                frag_nodes.push_back(frag_node);
             }
-            else{
-                for(auto attr:frag_.attr_names){
-                    if(attr == sel->attr_names[0]){
-                        query_tree_node* new_sel = sel->copy();
-                        new_sel->child.clear();
-                        new_sel->parent = frag->parent;
-                        new_sel->parent->child[index] = new_sel;
-                        frag->parent = new_sel;
-                        new_sel->child.push_back(frag);
-                        break;
-                    }
-                }
-            }
+            parent->child[index] = union_node;
         }
+        else if(table.v_frags.size() > 0){
+            query_tree_node* join_node = new query_tree_node;
+            join_node->node_type = JOIN;
+            join_node->table_names.push_back(table.table_name);
+            join_node->parent = parent;
+            query_tree_node* l_frag = new query_tree_node;
+            frag_info v_frag0 = get_frag_info(table.v_frags[0]);
+            frag_info v_frag1 = get_frag_info(table.v_frags[1]);
+            l_frag->frag_id = v_frag0.frag_id;
+            l_frag->node_type = FRAGMENT;
+            l_frag->parent = join_node;
+            join_node->child.push_back(l_frag);
+            frag_nodes.push_back(l_frag);
+            query_tree_node* r_frag = new query_tree_node;
+            r_frag->frag_id = v_frag1.frag_id;
+            r_frag->node_type = FRAGMENT;
+            r_frag->parent = join_node;
+            frag_nodes.push_back(r_frag);
+            join_node->child.push_back(r_frag);
+
+            string key = get_table_info(v_frag0.table_name).key;
+            predicateT pred = {v_frag0.table_name, key,
+                                EQ, key, v_frag1.table_name};
+            join_node->pred_type = TAB;
+            join_node->predt.push_back(pred);
+            parent->child[index] = join_node;
+        }
+        return;
     }
+    for(auto child:node->child){
+        frag_table_node(child);
+    }
+}
+
+void query_tree::frag_table()
+{
+    frag_table_node(root);
 }
 
 void query_tree::prune_join_node(query_tree_node* node){
