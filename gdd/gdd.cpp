@@ -95,7 +95,12 @@ void GDD::update_frag_info(int frag_id,vector<string> attr_names,vector<attr_inf
 
 string get_frag_name(int frag_id)
 {
-    string name = "frag_";
+	string name;
+	frag_info info = get_frag_info(frag_id);
+	if(info.is_temp == true)
+		name = "temp_table_";
+    else
+    	     name = "frag_";
     name = name + to_string(frag_id);
     return name;
 }

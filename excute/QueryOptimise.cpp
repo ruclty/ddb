@@ -601,3 +601,6 @@ int query_plan::allocate(string fragment_name, int site, map<string,int> frag_to
 // next week's work:
 // fill the empty function;
 // finish local excute code;
+ek's work:
+// fill the empty function;
+// finish local excute code;
