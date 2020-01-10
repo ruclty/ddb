@@ -9,7 +9,7 @@
 #include <pthread.h>
 using namespace std;
 
-#define BUFFER_SIZE 1024
+//#define BUFFER_SIZE 1024
 //int site_id = 1;
 
 rpc_receive::rpc_receive(int site_id){
@@ -147,13 +147,15 @@ void rpc_receive::ReceivePlan(string plans)
         plan.target_site_id = std::stoi(vecplans[3]);
         plan.is_end = std::stoi(vecplans[4]);
         
-        for(int j=4;j<vecplans.size();j++)
+        for(int j=5;j<vecplans.size();j++)
             plan.table_names.push_back(vecplans[j]);
 
         results.push_back(plan);
         vector<Operator>::iterator it = results.begin();
         //std::cout << (*it).table_names <<endl;
     }
+     if(results[0].table_names.size() > 0)
+    	cout << "dffd:"+results[0].table_names[0] << endl;
     //this->received_plan = results;
     this->site_exc.sql_queue = results;
     vector<Operator> to_do = this->site_exc.check_plan();
