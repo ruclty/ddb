@@ -84,16 +84,15 @@ void site_excution::recieve_result_table(int frag_id,string table_content, strin
 	int origin_frag_id = from_name_find_frag_id(origin_table_name);
 	frag_info source_table_info = get_frag_info(origin_frag_id);
     vector<string> table_attr_name = source_table_info.attr_names;
+    string temp = "";
     for(int i=0; i<table_attr_name.size();i++){
-    	string temp = "";
-    	temp += table_attr_name[i];
-    	temp += ' ';
-    	if(i != table_attr_name.size()-1)
-    		temp += ',';
-    	cout << temp << endl;
-
-    	cout << table_content << endl;
+    		temp += table_attr_name[i];
+    		if(i != table_attr_name.size()-1){
+    			temp += ',';
+    			}
     }
+    cout << temp  << endl;
+    cout << table_content << endl;
 }
 
 vector<Operator> site_excution::recieve_plan(vector<Operator> plan){
