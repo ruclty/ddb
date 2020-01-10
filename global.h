@@ -11,7 +11,7 @@
 #include <regex>
 
 //#define SERVER_PORT 6666
-
+#define BUFFER_SIZE 1000000
 using namespace std;
 
 std::map<int,int> SERVER_PORT = {

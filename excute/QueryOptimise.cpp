@@ -21,8 +21,12 @@ int query_plan::semi_join(int target_site, int frag_id1, int frag_id2){
 
 void query_plan::transfer_plan(){
     for(int i=1;i<=4;i++){
+    	
     	   cout << to_string(plan[i].size()) << endl;
-        SendPlan(this->plan[i], i, 5);
+    	   if(plan[i].size() > 0)
+        		SendPlan(this->plan[i], i, 5);
+
+        cout << "send end" << endl;
     }
 }
 
@@ -266,7 +270,7 @@ void query_plan::excute_one_operator(query_tree_node* node, int child_id)
 
 	// child_num = 1
 	// attribute_num = n
-	if(node_type == PROJECT){
+	if(node_type == PROJECT and node->child.size() != 1){
 		// get sql
 		string result_sql = "select ";
         cout << "Is wrong? 1" << endl;
@@ -323,7 +327,22 @@ void query_plan::excute_one_operator(query_tree_node* node, int child_id)
             this->transfer_plan();
         }
     }
-
+	if(node_type == PROJECT and node->child.size() == 1){
+		cout << "xxddxxxxffffxvv" << endl;
+		int frag_id = node->child[0]->frag_id;
+		cout << "xxddxxxxffffxvvsdsadadasdasdas" << endl;
+		for(int i=1 ; i<= 4; i++){
+			cout << "xxddxxxxfasasasassafffxvv" << endl;
+			if(plan[i].size() != 0){
+				cout << to_string(plan[i].size()) << endl;
+				if(plan[i][plan[i].size()-1].result_frag_id == frag_id){
+					this->plan[i][plan[i].size()-1].is_end = 1;
+					break;
+					}
+			}
+		}
+		this->transfer_plan();
+		}
     // join: joinNode to sql(before excuted ,need to transfer table need join to one site, and need semi-join)
     // select *
     // from table_name1, table_name2
@@ -420,7 +439,7 @@ void query_plan::excute_one_operator(query_tree_node* node, int child_id)
          //   cout << "IS WRONG??  5" << endl;
         }
       //  cout << to_string(result_frag_id) << endl;
-        if(node->parent){
+        if(node->parent and node->parent->child.size() != 1){
             query_tree_node* new_node = new query_tree_node();
             new_node->node_type = FRAGMENT;
             new_node->frag_id = result_frag_id;
@@ -438,7 +457,7 @@ void query_plan::excute_one_operator(query_tree_node* node, int child_id)
     }
     
     // 
-    if(node_type == UNION){
+    if(node_type == UNION and node->parent->child.size() != 1){
     	bool Is_on_one_site = true;
     	int same_site = 0;
         //cout << "Is there wrong? 1" << endl;
@@ -527,7 +546,11 @@ void query_plan::excute_one_operator(query_tree_node* node, int child_id)
         // cout << node->parent<< endl;
         // for(int i = 0;i < node->parent->child.size(); i++)
         //     cout << node->parent->child[i]->get_str() << endl;
-    }   
+    }
+    if(node_type == UNION and node->child.size() == 1){
+    		cout << "dfsdfsdfdsfsd" << endl;
+    		node->parent->child[0] = node->child[0];
+    	}
 }
 
 

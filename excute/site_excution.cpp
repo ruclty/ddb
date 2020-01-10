@@ -4,13 +4,13 @@
 #include "site_excution.h"
 using namespace std;
 
-#define MAIN_SITE_ID 1
+#define MAIN_SITE_ID 5
 
 site_excution::site_excution(int site_id){
 	this->site_id = site_id;
-	//string ddb_name = "site"+to_string(site_id);
+	string ddb_name = "site"+to_string(site_id);
 	//cout << ddb_name << endl;
-	//this->mysql = MySql(ddb_name,site_id);
+	this->mysql = MySql(ddb_name,site_id);
 	this->table_queue = this->mysql.get_table_names();
 	for(int i=0; i< table_queue.size(); i++)
 		cout << this->table_queue[i] << endl;
@@ -33,9 +33,11 @@ vector<Operator> site_excution::check_plan(){
 		bool can_excute = true;
 		this->sql_queue[i].id = i;
 		cout << to_string(sql_queue[i].table_names.size()) << endl;
+		cout <<"sql:is_end:" + to_string(sql_queue[i].is_end) << endl;
 		for(int j=0; j< sql_queue[i].table_names.size(); j++){
 			bool no_in = false;
 			cout << "sql:talbe:"+sql_queue[i].table_names[j] << endl;
+
 			if(can_excute == false)
 				break;
 			for(int k = 0; k < this->table_queue.size();k++){// find table from table_queue
@@ -111,7 +113,7 @@ void site_excution::excute_results(vector<Operator> to_Operator){
 			
 			res.result_frag_id = this->mysql.excute_select_sql(sql, to_Operator[i].result_frag_id);
 			table_queue.push_back(temp_name);
-			
+			this->check_plan();
 			if(to_Operator[i].is_end == 1){
 				string table_name = get_frag_name(to_Operator[i].result_frag_id);
 				res.table_content = mysql.select_all_table(table_name);
@@ -124,7 +126,7 @@ void site_excution::excute_results(vector<Operator> to_Operator){
 			SendTable(to_Operator[i].result_frag_id ,res.table_content, sql,to_Operator[i].target_site_id,this->site_id);
 
 			if(to_Operator[i].is_end == 1) 
-				SendResultTable(to_Operator[i].result_frag_id,res.table_content, sql,MAIN_SITE_ID, this->site_id);
+				SendResultTable(to_Operator[i].result_frag_id,res.table_content, sql,5, this->site_id);
 		}
 		for(auto it = this->sql_queue.begin(); it != this->sql_queue.end();){
 			//cout << *it << endl;
