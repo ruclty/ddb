@@ -140,6 +140,8 @@ void rpc_receive::ReceivePlan(string plans)
         Operator plan;
         if(vecplans[0][0] == '0')
         	plan.content = vecplans[0].substr(1,vecplans[0].size()-1);
+        else
+            plan.content = vecplans[0];
         OPERATORTYPE ope=mapStringtoEnum(vecplans[1]);
         plan.ope = ope;
         std::cout <<  "plan.ope\t" << plan.ope  << endl;
@@ -170,8 +172,10 @@ void rpc_receive::ReceiveTable(int frag_id, string frag_content,string origin_ta
 {
     std::cout <<  "have received frag_id \t" << frag_id  << endl;
     std::cout <<  "have received frag_content\t" << frag_content  << endl;
-    //this->received_frag_id = frag_id;
-    //this->received_frag_content = frag_content;
+   // this->received_frag_id = frag_id;
+   // this->received_frag_content = frag_content;
+    cout<< "why" << endl;
+    
     vector<Operator> to_do = site_exc.recieve_and_check(frag_id, frag_content, origin_table_name);
     site_exc.excute_results(to_do);
 //    string table_name = this->site_exc.mysql.gdd.get_frag_info(frag_id).table_name;

@@ -10,6 +10,15 @@
 #include <algorithm>
 using namespace std;
 
+struct transfer_plan_para
+{
+    vector<Operator> plan;
+    int target_site;
+    int source_site;
+};
+
+static void *SendPlan(void *arg);
+
 const int MAIN_SITE_ID = 1;
 class query_plan{
 	private:
