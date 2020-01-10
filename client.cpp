@@ -13,8 +13,8 @@
 using namespace std;
 
 static void *get_plan(void* arg){    
-//    string sql = "select student.id,student.name,exam.mark,course.name from student,exam,course where student.id=exam.student_id and exam.course_id=course.id and student.id>1060000 and course.location!='CB-3'";
-	string sql = "select * from student where student.id<1000010";
+  //  string sql = "select student.id,student.name,exam.mark,course.name from student,exam,course where student.id=exam.student_id and exam.course_id=course.id and student.id>1060000 and course.location!='CB-3'";
+	  string sql = "select * from student where student.id<1000010";
     cout << sql << endl;
     //sql="select * from a where a.a!='a'";
     query_tree tree(sql);
@@ -55,8 +55,8 @@ int main(){
      pthread_create(&thread[0], NULL, &get_plan,(void*)no);
 	pthread_create(&thread[0], NULL, &listening,(void*)no);
   //   printf("Create treads success\n Waiting for threads to finish...\n");
-     rpc_receive rec = rpc_receive(5);
-    	startListening(8888, &rec);
+    // rpc_receive rec = rpc_receive(5);
+    //	startListening(8888, &rec);
      for (no = 0; no < 1; no++) {
           //等待线程结束 
           res = pthread_join(thread[no], &thrd_ret);
