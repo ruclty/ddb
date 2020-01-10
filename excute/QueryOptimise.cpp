@@ -40,6 +40,7 @@ int query_plan::transfer_sql(string sql, int source_site_id, int excute_site_id,
     new_frag_info.frag_id = new_frag_id;
    // new_frag_info.table_name = new_frag_name;
     new_frag_info.site_id = excute_site_id;
+   	new_frag_info.is_temp = true;
     cout << ", new_frag_info.site_id :" + to_string(new_frag_info.site_id);
     save_frag_info(new_frag_info);
     cout << ", and the temp_table_id is:" + to_string(new_frag_id) << endl; 
@@ -65,6 +66,7 @@ int query_plan::transfer_table(string table_name, int source_site_id, int excute
     new_frag_info.frag_id = new_frag_id;
     new_frag_info.table_name = new_frag_name;
     new_frag_info.site_id = excute_site_id;
+    new_frag_info.is_temp = true;
     cout << ", new_frag_info.site_id :" + to_string(new_frag_info.site_id);
     new_frag_info.size = source_frag_info.size;
     new_frag_info.attr_names = source_frag_info.attr_names;
@@ -599,8 +601,5 @@ int query_plan::allocate(string fragment_name, int site, map<string,int> frag_to
     return transferred;
 }
 // next week's work:
-// fill the empty function;
-// finish local excute code;
-ek's work:
 // fill the empty function;
 // finish local excute code;
