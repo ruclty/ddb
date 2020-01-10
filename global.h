@@ -15,7 +15,7 @@
 using namespace std;
 
 std::map<int,int> SERVER_PORT = {
-	{1,6666},{2,6666},{3,6666},{4,7777},{5,8888}
+	{1,6666},{2,6666},{3,7777},{4,7777},{5,8888}
 };
 
 
@@ -23,30 +23,29 @@ string mapIdtoIp(int id,int this_site)
 {
 	std::map<int ,string> maplive;
 
-    if(this_site == 1){
-		maplive[1]="127.0.0.1";//map中最简单最常用的插入添加！
-    		maplive[4]="10.77.70.128";
-    		maplive[2]="10.77.70.127";
-    		maplive[3]="10.77.70.128";
-    		maplive[5]="10.77.70.128";
-    }
-    if(this_site == 2)
-    {
+//    if(this_site == 1){
+//        maplive[1]="127.0.0.1";//map中最简单最常用的插入添加！
+//            maplive[4]="10.77.70.128";
+//            maplive[2]="10.77.70.127";
+//            maplive[3]="10.77.70.128";
+//            maplive[5]="10.77.70.128";
+//    }
+
     		maplive[1]="10.77.70.126";//map中最简单最常用的插入添加！
-    		maplive[4]="10.77.70.128";
-    		maplive[2]="127.0.0.1";
-    		maplive[3]="10.77.70.128";
-    		maplive[5]="10.77.70.128";
-    	}
-   
-    if(this_site == 3 | this_site == 4 || this_site == 5)
-    {
-    		maplive[1]="10.77.70.126";//map中最简单最常用的插入添加！
-    		maplive[4]="127.0.0.1";
-    		maplive[2]="10.77.70.127";
-    		maplive[3]="127.0.0.1";
-    		maplive[5]="127.0.0.1";;
-    	}
+    		maplive[4]="10.77.70.127";
+    		maplive[2]="10.77.70.127;
+    		maplive[3]="10.77.70.126";
+    		maplive[5]="10.77.70.126";
+    
+//
+//    if(this_site == 3 | this_site == 4 || this_site == 5)
+//    {
+//            maplive[1]="10.77.70.126";//map中最简单最常用的插入添加！
+//            maplive[4]="127.0.0.1";
+//            maplive[2]="10.77.70.127";
+//            maplive[3]="127.0.0.1";
+//            maplive[5]="127.0.0.1";;
+//        }
 
 
     std::map<int ,string >::iterator l_it;;
