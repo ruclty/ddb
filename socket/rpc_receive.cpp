@@ -138,7 +138,8 @@ void rpc_receive::ReceivePlan(string plans)
             std::cout <<  "vecplans\t" << vecplans[j]  << endl;
         }
         Operator plan;
-        plan.content = vecplans[0];
+        if(vecplans[0][0] == '0')
+        	plan.content = vecplans[0].substr(1,vecplans[0].size()-1);
         OPERATORTYPE ope=mapStringtoEnum(vecplans[1]);
         plan.ope = ope;
         std::cout <<  "plan.ope\t" << plan.ope  << endl;

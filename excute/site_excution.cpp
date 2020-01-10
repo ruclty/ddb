@@ -32,37 +32,54 @@ vector<Operator> site_excution::check_plan(){
 		cout << "find is some table can exc" << endl;
 		bool can_excute = true;
 		this->sql_queue[i].id = i;
+		cout << "plan i content:" << sql_queue[i].content << endl;
 		cout << to_string(sql_queue[i].table_names.size()) << endl;
-		cout <<"sql:is_end:" + to_string(sql_queue[i].is_end) << endl;
-		for(int j=0; j< sql_queue[i].table_names.size(); j++){
-			bool no_in = false;
-			cout << "sql:talbe:"+sql_queue[i].table_names[j] << endl;
-
-			if(can_excute == false)
-				break;
-			for(int k = 0; k < this->table_queue.size();k++){// find table from table_queue
-				cout << "table_queue_table:" + table_queue[k] << endl;
-				if(table_queue[k] == sql_queue[i].table_names[j]){
-					no_in = true;
-					cout <<"can excute:" + sql_queue[i].table_names[j] << endl;
-					break; 
+		//cout <<"sql:is_end:" + to_string(sql_queue[i].is_end) << endl;
+		if(sql_queue[i].table_names.size() != 0){
+			for(int j=0; j< sql_queue[i].table_names.size(); j++){
+				bool no_in = false;
+				cout << "sql:talbe:"+sql_queue[i].table_names[j] << endl;
+	
+				if(can_excute == false)
+					break;
+				for(int k = 0; k < this->table_queue.size();k++){// find table from table_queue
+		//			cout << "table_queue_table:" + table_queue[k] << endl;		
+						if(table_queue[k] == sql_queue[i].table_names[j]){
+							no_in = true;
+							cout <<"can excute:" + sql_queue[i].table_names[j] << endl;
+							break; 
+							}
+						
+					
+				}
+				if(no_in == false){// if not_find table ,this sql can't excute;
+					can_excute = false;
+					break;
+				}
+				
+			}
+			if(can_excute == true){
+				cout << "can excute!!!!!!!!!!!"+ sql_queue[i].content << endl;
+				results.push_back(sql_queue[i]);
+			}
+				
+		}
+		else{
+			for(int k = 0; k < this->table_queue.size();k++){
+				if(table_queue[k] == sql_queue[i].content){
+					can_excute = true;
+					cout <<"can excute:" + sql_queue[i].content << endl;
+					results.push_back(sql_queue[i]);
 				}
 			}
-			if(no_in == false){// if not_find table ,this sql can't excute;
-				can_excute = false;
-				break;
-			}
-			
-		}
-		if(can_excute == true){
-			cout << "can excute!!!!!!!!!!!"+ sql_queue[i].content << endl;
-			results.push_back(sql_queue[i]);
-		}
 		
+		}
+			
+			
 	}
 	cout <<"res_size:"+ to_string(results.size()) << endl;
-	for(int i=0;i<results.size();i++)
-		cout << "result op:" + to_string(results[i].id) << endl;
+//	for(int i=0;i<results.size();i++)
+//		cout << "result op:" + to_string(results[i].id) << endl;
 	return results;
 
 }

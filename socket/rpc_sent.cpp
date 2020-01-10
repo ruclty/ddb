@@ -10,7 +10,7 @@
 #include "rpc_sent.h"
 #include <arpa/inet.h>
 
-#define BUFFER_SIZE 1024
+//#define BUFFER_SIZE 1000000
 
 
 string EnumToString(OPERATORTYPE ope)
@@ -61,6 +61,7 @@ void SendPlan(vector<Operator> plan, int target_site_id, int sourceId)
 
 void socket_client(int target_site_id,string results,int sourceId)
 {
+	cout << "??socketc" << endl;
     string target_site_ip=mapIdtoIp(target_site_id, sourceId);
     cout << "socket_client"<<endl;
     char **argv;
@@ -118,8 +119,16 @@ void SendTable(int frag_id, string frag_content, string origin_table_name, int t
     string target_site_ip=mapIdtoIp(target_site_id, sourceId);
     string frag_content_and_frag_id;
     string str=to_string(frag_id);
+
     frag_content_and_frag_id='1'+str+'#'+frag_content +'#' + origin_table_name;
-    cout <<  "frag_content_and_frag_id\t" << frag_content_and_frag_id << endl;
+
+   // cout << frag_content_and_frag_id << endl;
+      //  cout << origin_table_name << endl;
+    //    cout << str << endl;
+    cout << target_site_id << endl;
+    cout << sourceId << endl;
+    cout << ">>>>>" << endl;
+    //cout <<  "frag_content_and_frag_id\t" << frag_content_and_frag_id << endl;
     socket_client(target_site_id,frag_content_and_frag_id,sourceId);
 }
 void SendResultTable(int frag_id, string frag_content, string origin_table_name,  int target_site_id, int sourceId)
