@@ -1069,13 +1069,17 @@ bool update_frag_num()
     return true;
 }
 
-bool update_frag_info(int frag_id, vector<string> attr_names, int size)
+bool update_frag_info(int frag_id, vector<string> attr_names, vector<attr_info> attr_infos ,int size)
 {
     string attr_dir = "/fraginfo/"+to_string(frag_id)+"/attr_names";
     for(auto a: attr_names){
         string key = attr_dir+"/"+a;
         string value = a;
         insert_value(key, a);
+    }
+
+    for(auto attr: attr_infos){
+        save_attr_info(frag_id, attr);
     }
 
     string key = "/fraginfo/"+to_string(frag_id)+"/size";
