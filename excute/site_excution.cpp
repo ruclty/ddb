@@ -47,7 +47,7 @@ vector<Operator> site_excution::check_plan(){
 						if(table_queue[k] == sql_queue[i].table_names[j]){
 							no_in = true;
 							cout <<"can excute:" + sql_queue[i].table_names[j] << endl;
-							break; 
+							//break; 
 							}
 						
 					
@@ -76,6 +76,16 @@ vector<Operator> site_excution::check_plan(){
 		}
 			
 			
+	}
+	for(int i=0;i<results.size();i++){
+		for(auto it = this->sql_queue.begin(); it != this->sql_queue.end();){
+			//cout << *it << endl;
+			//cout << to_Operator[i] << endl;
+			if(it->id == results[i].id){
+				it = this->sql_queue.erase(it);
+				break;
+			}
+		}
 	}
 	cout <<"res_size:"+ to_string(results.size()) << endl;
 //	for(int i=0;i<results.size();i++)
@@ -144,18 +154,12 @@ void site_excution::excute_results(vector<Operator> to_Operator){
 			if(to_Operator[i].is_end == 1) 
 				SendResultTable(to_Operator[i].result_frag_id,res.table_content, sql,5, this->site_id);
 		}
-		for(auto it = this->sql_queue.begin(); it != this->sql_queue.end();){
-			//cout << *it << endl;
-			//cout << to_Operator[i] << endl;
-			if(it->id == to_Operator[i].id){
-				it = this->sql_queue.erase(it);
-				break;
-			}
-		}
+
 		results.push_back(res);
 		string table_name = get_frag_name(res.result_frag_id);
 		this->table_queue.push_back(table_name);
 	}
 	vector<Operator> next_Operator = this->check_plan();
-	excute_results(next_Operator);
+	if(next_Operator.size()>0)
+		excute_results(next_Operator);
 }
