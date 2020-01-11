@@ -108,7 +108,7 @@ void SendTable(int frag_id, string frag_content, string origin_table_name, int t
     string str=to_string(frag_id);
 
     frag_content_and_frag_id='1'+str+'#' + origin_table_name+'#'+frag_content ;
-	cout << "sent_len:" << frag_content_and_frag_id.size() << endl;
+	cout << frag_content_and_frag_id << "sent_content"<< endl;
    // cout << frag_content_and_frag_id << endl;
       //  cout << origin_table_name << endl;
     //    cout << str << endl;
@@ -132,46 +132,46 @@ void socket_client(int target_site_id,string results,int sourceId)
     // 设置一个socket地址结构client_addr, 代表客户机的internet地址和端口
     struct sockaddr_in client_addr;
     bzero(&client_addr, sizeof(client_addr));
-    cout << "Is wrong? 1"<< argv[0]<<endl;
+  //  cout << "Is wrong? 1"<< argv[0]<<endl;
     client_addr.sin_family = AF_INET; // internet协议族
-    cout << "Is wrong? 2"<< argv[0]<<endl;
+    //cout << "Is wrong? 2"<< argv[0]<<endl;
     client_addr.sin_addr.s_addr = htons(INADDR_ANY); // INADDR_ANY表示自动获取本机地址
-    cout << "Is wrong? 3"<< argv[0]<<endl;
+//    cout << "Is wrong? 3"<< argv[0]<<endl;
     client_addr.sin_port = htons(0);
-	cout << "Is wrong? 4"<< argv[0]<<endl;
+//	cout << "Is wrong? 4"<< argv[0]<<endl;
     // 创建用于internet的流协议(TCP)类型socket，用client_socket代表客户端socket
     int client_socket = socket(AF_INET, SOCK_STREAM, 0);
-    cout << "Is wrong? 5"<< argv[0]<<endl;
+//    cout << "Is wrong? 5"<< argv[0]<<endl;
     if (client_socket < 0)
     {
         printf("Create Socket Failed!\n");
         exit(1);
     }
-    cout << "Is wrong? 6"<< argv[0]<<endl;
+//    cout << "Is wrong? 6"<< argv[0]<<endl;
     // 把客户端的socket和客户端的socket地址结构绑定
     if (bind(client_socket,(struct sockaddr*)&client_addr, sizeof(client_addr)))
     {
         printf("Client Bind Port Failed!\n");
         exit(1);
     }
-    cout << "Is wrong? 7"<< argv[0]<<endl;
+//    cout << "Is wrong? 7"<< argv[0]<<endl;
     // 设置一个socket地址结构server_addr,代表服务器的internet地址和端口
     struct sockaddr_in  server_addr;
     bzero(&server_addr, sizeof(server_addr));
-    cout << "Is wrong? 8"<< argv[0]<<endl;
+//    cout << "Is wrong? 8"<< argv[0]<<endl;
     server_addr.sin_family = AF_INET;
-    cout << "Is wrong? 9"<< argv[0]<<endl;
+//    cout << "Is wrong? 9"<< argv[0]<<endl;
     // 服务器的IP地址来自程序的参数
     if (inet_aton(argv[0], &server_addr.sin_addr) == 0)
     {
         printf("Server IP Address Error!\n");
         exit(1);
     }
-    cout << "Is wrong? 10"<< argv[0]<<endl;
+//    cout << "Is wrong? 10"<< argv[0]<<endl;
     server_addr.sin_port = htons(SERVER_PORT[target_site_id]); 
-    cout << "Is wrong? 11"<< argv[0]<<endl;
+//    cout << "Is wrong? 11"<< argv[0]<<endl;
     socklen_t server_addr_length = sizeof(server_addr);
-    cout << "Is wrong? 12"<< argv[0]<<endl;
+//    cout << "Is wrong? 12"<< argv[0]<<endl;
     // 向服务器发起连接请求，连接成功后client_socket代表客户端和服务器端的一个socket连接
     if (connect(client_socket, (struct sockaddr*)&server_addr, server_addr_length) < 0)
     {
@@ -180,11 +180,11 @@ void socket_client(int target_site_id,string results,int sourceId)
     }
     char buffer[BUFFER_SIZE];
     bzero(buffer, sizeof(buffer));
-    cout << "Is wrong? 13"<< argv[0]<<endl;
+//    cout << "Is wrong? 13"<< argv[0]<<endl;
     strncpy(buffer, results.c_str(), results.length()  > BUFFER_SIZE ? BUFFER_SIZE : results.length());
-    cout << "Is wrong? 14"<< argv[0]<<endl;
+//    cout << "Is wrong? 14"<< argv[0]<<endl;
     send(client_socket, buffer, BUFFER_SIZE, 0);
-    cout << "Is wrong? 16"<< argv[0]<<endl;
+//    cout << "Is wrong? 16"<< argv[0]<<endl;
     // 关闭与服务器端的连接
     close(client_socket);
 }

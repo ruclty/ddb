@@ -84,7 +84,7 @@ int query_plan::transfer_table(string table_name, int source_site_id, int excute
     int new_frag_id = get_new_frag_id();
     string new_frag_name = "temp_table_"+ to_string(new_frag_id);
     new_frag_info.frag_id = new_frag_id;
-    new_frag_info.table_name = new_frag_name;
+    new_frag_info.table_name = source_frag_info.table_name;
     new_frag_info.site_id = excute_site_id;
     new_frag_info.is_temp = true;
     cout << ", new_frag_info.site_id :" + to_string(new_frag_info.site_id);

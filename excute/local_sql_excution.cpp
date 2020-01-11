@@ -127,9 +127,9 @@ int MySql::excute_select_sql(string Operator, int result_frag_id){
  					sql += ",";
  				else
  					sql += ")";
-                cout << sql << endl;
+               // cout << sql << endl;
         	}
-            //cout << sql << endl;
+           // cout << sql << endl;
         	stmt->executeUpdate(sql);
         	line_count += 1;
         }
@@ -341,18 +341,29 @@ void MySql::create_received_table(string table_content, int result_frag_id, stri
         temp_table_name = "temp_table_" + to_string(result_frag_id);
 
     int origin_frag_id = from_name_find_frag_id(origing_table_name);
+	cout << origing_table_name << endl;
+   // vector<attr_info> table_attributes;
+	vector<string> table_attr_name;
 
-    vector<attr_info> table_attributes;
-    vector<string> table_attr_name = get_frag_info(origin_frag_id).attr_names;
-
-    for(int i = 0; i< table_attr_name.size(); i++){
-        attr_info table_att = get_attr_info(origing_table_name, table_attr_name[i]);
-        table_attributes.push_back(table_att);
-    }
+    frag_info origin_frag_info = get_frag_info(origin_frag_id);
+    table_info origin_table_info = get_table_info(origin_frag_info.table_name);
+    if(origin_frag_info.is_temp)
+    		 table_attr_name = get_frag_info(origin_frag_id).attr_names;
+    else{
+    		cout << "fsfsfdsfs" << endl;
+		 table_attr_name = origin_table_info.attr_names;
+    	}
+    	cout << "table_attr_mame_size:" << table_attr_name.size() << endl;
+    	for(auto t :table_attr_name)
+    		print_attr_info(get_attr_info(origin_frag_info.table_name,t));
+//    for(int i = 0; i< table_attr_name.size(); i++){
+//        attr_info table_att = get_attr_info(origing_table_name, table_attr_name[i]);
+//        table_attributes.push_back(table_att);
+//    }
     vector<string> insert_content = split(table_content,"\n");
     vector<string> column = table_attr_name;
 
-    vector<attr_info> column_attr = table_attributes;
+//    vector<attr_info> column_attr = table_attributes;
     try{
        MySQL_Driver *driver;
         Connection *con;
@@ -379,7 +390,7 @@ void MySql::create_received_table(string table_content, int result_frag_id, stri
         string sql = "create table " + temp_table_name + " (";
         cout << to_string(column.size()) << endl;
        for(int i = 1; i<= column.size(); i++){
-            cout << sql << endl;
+            //cout << sql << endl;
             // int type = res_set->getMetaData()->getColumnType(i);
             // //cout << to_string(type) << endl;
             // if(type == 5)
@@ -395,8 +406,7 @@ void MySql::create_received_table(string table_content, int result_frag_id, stri
             // //cout << "vvvvvv" << endl;
             // column.push_back(ai.attr_name);
             // column_attr.push_back(ai);
-
-            attr_info temp_info = table_attributes[i-1];
+            attr_info temp_info = get_attr_info(origin_frag_info.table_name,table_attr_name[i-1]);
             string col_name = table_attr_name[i-1];
             string col_type = temp_info.type;
             string t = col_name + " " + col_type;
@@ -408,18 +418,18 @@ void MySql::create_received_table(string table_content, int result_frag_id, stri
                     sql += ')';
         }
      
-        //cout <<"sql is:" + sql << endl;
+        cout <<"sql is:" + sql << endl;
         
         stmt->executeUpdate(sql);
 
         
-
+		cout << "is created??????????????" << endl;
         int line_count = 0;
         for(int i = 0;i < insert_content.size();i++){
             string sql = "insert into " + temp_table_name + " values (";
             sql += insert_content[i];
             sql += ")";
-            
+            cout << sql << endl;
             stmt->executeUpdate(sql);
             line_count += 1;
         }
