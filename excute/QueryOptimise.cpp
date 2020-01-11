@@ -25,66 +25,31 @@ int query_plan::semi_join(int target_site, int frag_id1, int frag_id2){
 //    int source_site;
 //};
 
-static void *SendPlan(void *arg)
-{
-	transfer_plan_para *para;
-	para = (struct transfer_plan_para *) arg;
-	vector<Operator> plan = para->plan;
-	int target_site_id = para->target_site;
-	int sourceId = para->source_site;
-	
-    string results = "";
-    cout <<  "start SendPlan \t" << endl;
-    cout <<  "plan.size() :\t" << plan.size() <<endl;
-    for(int i=0; i<plan.size();i++){
-        //Operator -> string
-        string plans = "0";
-        plans.append(plan[i].content);
-        plans.append("#");
-        string ope=EnumToString(plan[i].ope);
-        plans.append(ope);
-        plans.append("#");
-        plans.append(to_string(plan[i].result_frag_id));
-        plans.append("#");
-        plans.append(to_string(plan[i].target_site_id));
-        plans.append("#");
-        plans.append(to_string(plan[i].is_end));
-        plans.append("#");
-        for(int j=0; j<plan[i].table_names.size(); j++){
-            plans.append(plan[i].table_names[j]);
-            if(j != plan[i].table_names.size()-1)
-                plans.append("#");
-        }
-        results.append(plans);
-       // cout <<  "SendResults :\t" << results <<endl;
-        if(i != plan.size()-1)
-            results.append("$");
-    }
-    //call
-    string target_site_ip=mapIdtoIp(target_site_id, sourceId);
-    cout << "sent_len:" << results.size() << endl;
-    socket_client(target_site_id,results,sourceId);
-}
 void query_plan::transfer_plan(){
 	pthread_t thread[4];
 	int cou = 0;
     for(int i=1;i<=4;i++){
-    	   cout << "site:" << i <<to_string(this->plan[i].size()) << endl;
+    	   cout << "site:" << i <<',' << "size:" <<to_string(this->plan[i].size()) << endl;
 
     	   if(plan[i].size() > 0){
-    	   		transfer_plan_para *para;
+    	   		cout << "isr? 1" << endl;
+    	   		transfer_plan_para *para = new transfer_plan_para;
+    	   		cout << "isr? 2" << endl;
     	   		para->plan = this->plan[i];
+    	   		cout << "isr? 3" << endl;
     	   		para->target_site = i;
+    	   		cout << "isr? 4" << endl;
     	   		para->source_site = 5;
-    	   		
+    	   		cout << "isr? 5" << endl;
     	   		pthread_create(&thread[cou], NULL, SendPlan, (void*)para);
+    	   		cout << "isr? 6" << endl;
     	   		cou += 1; 
+    	   		cout << "isr? 7" << endl;
         	//	SendPlan(this->plan[i], i, 5);
     	   }
         cout << "send end" << endl;
     }
 }
-
 int query_plan::transfer_sql(string sql, int source_site_id, int excute_site_id, vector<string> table_names){
     cout << "trangsferring "+ sql << endl;
     cout << " from sourceId:" +to_string(source_site_id) + " to targetId:"+to_string(excute_site_id);

@@ -11,7 +11,7 @@
 #include <regex>
 
 //#define SERVER_PORT 6666
-#define BUFFER_SIZE 1000000
+#define BUFFER_SIZE 3000000
 using namespace std;
 
 std::map<int,int> SERVER_PORT = {
@@ -33,7 +33,7 @@ string mapIdtoIp(int id,int this_site)
 
     		maplive[1]="10.77.70.126";//map中最简单最常用的插入添加！
     		maplive[4]="10.77.70.127";
-    		maplive[2]="10.77.70.127;
+    		maplive[2]="10.77.70.127";
     		maplive[3]="10.77.70.126";
     		maplive[5]="10.77.70.126";
     

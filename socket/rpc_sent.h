@@ -26,9 +26,16 @@ using std::endl;
 using std::string;
 using std::ofstream;
 using std::vector;
+struct transfer_plan_para
+{
+    vector<Operator> plan;
+    int target_site;
+    int source_site;
+};
 
+static void *SendPlan(void *arg);
 void SendResultTable(int frag_id, string frag_content, string origin_table_name,int target_site_id);
-void SendPlan(vector<Operator> plan, int target_site_id, int sourceId);
+//void SendPlan(vector<Operator> plan, int target_site_id, int sourceId);
 void SendTable(int frag_id, string frag_content, string origin_table_name, int target_site_id);
 void socket_client(int ,string,int );
 //string mapIdtoIp(int id);

@@ -59,6 +59,65 @@ string EnumToString(OPERATORTYPE ope)
 //    cout << "sent_len:" << results.size() << endl;
 //    socket_client(target_site_id,results,sourceId);
 //}
+static void *SendPlan(void *arg)
+{
+	transfer_plan_para *para;
+	para = (struct transfer_plan_para *) arg;
+	vector<Operator> plan = para->plan;
+	int target_site_id = para->target_site;
+	int sourceId = para->source_site;
+	
+    string results = "";
+    cout <<  "start SendPlan \t" << endl;
+    cout <<  "plan.size() :\t" << plan.size() <<endl;
+    for(int i=0; i<plan.size();i++){
+        //Operator -> string
+        string plans = "0";
+        plans.append(plan[i].content);
+        plans.append("#");
+        string ope=EnumToString(plan[i].ope);
+        plans.append(ope);
+        plans.append("#");
+        plans.append(to_string(plan[i].result_frag_id));
+        plans.append("#");
+        plans.append(to_string(plan[i].target_site_id));
+        plans.append("#");
+        plans.append(to_string(plan[i].is_end));
+        plans.append("#");
+        for(int j=0; j<plan[i].table_names.size(); j++){
+            plans.append(plan[i].table_names[j]);
+            if(j != plan[i].table_names.size()-1)
+                plans.append("#");
+        }
+        results.append(plans);
+       // cout <<  "SendResults :\t" << results <<endl;
+        if(i != plan.size()-1)
+            results.append("$");
+    }
+    //call
+    string target_site_ip=mapIdtoIp(target_site_id, sourceId);
+    cout << "sent_len:" << results.size() << endl;
+    socket_client(target_site_id,results,sourceId);
+}
+
+void SendTable(int frag_id, string frag_content, string origin_table_name, int target_site_id, int sourceId){
+	
+    cout <<  "start SendTable \t" << endl;
+    string target_site_ip=mapIdtoIp(target_site_id, sourceId);
+    string frag_content_and_frag_id;
+    string str=to_string(frag_id);
+
+    frag_content_and_frag_id='1'+str+'#' + origin_table_name+'#'+frag_content ;
+	cout << "sent_len:" << frag_content_and_frag_id.size() << endl;
+   // cout << frag_content_and_frag_id << endl;
+      //  cout << origin_table_name << endl;
+    //    cout << str << endl;
+    cout << target_site_id << endl;
+    cout << sourceId << endl;
+    cout << ">>>>>" << endl;
+    //cout <<  "frag_content_and_frag_id\t" << frag_content_and_frag_id << endl;
+    socket_client(target_site_id,frag_content_and_frag_id,sourceId);
+}
 
 void socket_client(int target_site_id,string results,int sourceId)
 {
@@ -129,23 +188,7 @@ void socket_client(int target_site_id,string results,int sourceId)
     // 关闭与服务器端的连接
     close(client_socket);
 }
-void SendTable(int frag_id, string frag_content, string origin_table_name, int target_site_id, int sourceId){
-    cout <<  "start SendTable \t" << endl;
-    string target_site_ip=mapIdtoIp(target_site_id, sourceId);
-    string frag_content_and_frag_id;
-    string str=to_string(frag_id);
 
-    frag_content_and_frag_id='1'+str+'#'+frag_content +'#' + origin_table_name;
-	cout << "sent_len:" << frag_content_and_frag_id.size() << endl;
-   // cout << frag_content_and_frag_id << endl;
-      //  cout << origin_table_name << endl;
-    //    cout << str << endl;
-    cout << target_site_id << endl;
-    cout << sourceId << endl;
-    cout << ">>>>>" << endl;
-    //cout <<  "frag_content_and_frag_id\t" << frag_content_and_frag_id << endl;
-    socket_client(target_site_id,frag_content_and_frag_id,sourceId);
-}
 void SendResultTable(int frag_id, string frag_content, string origin_table_name,  int target_site_id, int sourceId)
 {
     string target_site_ip=mapIdtoIp(target_site_id, sourceId);

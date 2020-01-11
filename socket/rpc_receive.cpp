@@ -96,27 +96,59 @@ void* Data_handle(void * arg) {
     }
     else if(buffer[0]=='1')
     {
+    		cout << "start receive table" << endl;
         string temp = buffer;
-        string sfrag_id(temp,1,1);
-        int frag_id=atoi(sfrag_id.c_str());
-        string frag_content(temp,3,BUFFER_SIZE-3);
+        cout << "..." << endl;
+        temp = temp.substr(1,temp.size()-1);   
+        cout << "...1" << endl;
+        cout << temp.length() << endl;    
+//        string sfrag_id(temp,1,1);
+//        int frag_id=atoi(sfrag_id.c_str());
+//        string frag_content(temp,3,BUFFER_SIZE-3);
         vector<string> frag_content_origin_table_name;
-        frag_content_origin_table_name=split(frag_content,"#");
-        frag_content=frag_content_origin_table_name[0];
-        string origin_table_name= frag_content_origin_table_name[1];
+        cout << "...2" << endl; 
+        int index1 = temp.find_first_of("#");
+	   cout << "frag_id:1" << endl;
+        int index2 = temp.find_last_of("#");
+        cout << "frag_id:2" << endl;
+        //frag_content_origin_table_name=split(temp,"#");
+        //cout << "size,of,split:" + frag_content_origin_table_name.size() << endl;
+        //cout << "...3" << endl; 
+        //int frag_id=atoi(frag_content_origin_table_name[0].c_str());
+        string frag_id_string = temp.substr(0,index1);
+        int frag_id = atoi(frag_id_string.c_str());
+        cout << "frag_id:3" + frag_id << endl;
+        string origin_table_name = temp.substr(index1+1,index2-index1-1);
+        cout << "frag_id:4" + frag_id << endl;
+        string frag_content =  temp.substr(index2+1,temp.size()-1-index2);
+	   cout << "frag_id:5" + frag_id << endl;
+        cout << "...4" << endl; 
+     //   string frag_content=frag_content_origin_table_name[1];
+        cout <<"frag_content:" + frag_content.length() << endl;
+        cout << "...5" << endl; 
+     //   cout <<"origin:" + frag_content_origin_table_name[2].size() << endl;
+    //    string origin_table_name= frag_content_origin_table_name[2];
+        cout <<"origin:" + origin_table_name.length() << endl;
+        cout << "...6" << endl; 
+                
         //cout << "Data_handle\t" << plans << endl;
+        
+
+
         rpc_rec->ReceiveTable(frag_id,frag_content,origin_table_name);
     }
     else if(buffer[0]=='2')
     {
         string temp = buffer;
-        string sfrag_id(temp,1,1);
-        int frag_id=atoi(sfrag_id.c_str());
-        string frag_content(temp,3,BUFFER_SIZE-3);
+        temp = temp.substr(1,temp.size()-1);         
+//        string sfrag_id(temp,1,1);
+//        int frag_id=atoi(sfrag_id.c_str());
+//        string frag_content(temp,3,BUFFER_SIZE-3);
         vector<string> frag_content_origin_table_name;
-        frag_content_origin_table_name=split(frag_content,"#");
-        frag_content=frag_content_origin_table_name[0];
-        string origin_table_name= frag_content_origin_table_name[1];
+        frag_content_origin_table_name=split(temp,"#");
+        int frag_id=atoi(frag_content_origin_table_name[0].c_str());
+        string frag_content=frag_content_origin_table_name[1];
+        string origin_table_name= frag_content_origin_table_name[2];
         
         rpc_rec->ReceiveResultTable(frag_id,frag_content,origin_table_name);
         //cout << "Data_handle\t" << plans << endl;
@@ -170,14 +202,16 @@ void rpc_receive::ReceivePlan(string plans)
 
 void rpc_receive::ReceiveTable(int frag_id, string frag_content,string origin_table_name)
 {
-    std::cout <<  "have received frag_id \t" << frag_id  << endl;
-    std::cout <<  "have received frag_content\t" << frag_content  << endl;
-   // this->received_frag_id = frag_id;
-   // this->received_frag_content = frag_content;
-    cout<< "why" << endl;
     
-    vector<Operator> to_do = site_exc.recieve_and_check(frag_id, frag_content, origin_table_name);
-    site_exc.excute_results(to_do);
+    std::cout <<   frag_content<< "have received frag_content\t"  << endl;
+    //this->received_frag_id = frag_id;
+    //this->received_frag_content = frag_content;
+    cout << origin_table_name<< "origin_talbe_name:" << endl;
+    std::cout <<  "have received frag_id \t" << frag_id  << endl;
+    cout << "what?" << endl;
+    vector<Operator> to_do = this->site_exc.recieve_and_check(frag_id, frag_content, origin_table_name);
+    cout << "sssss" << endl;
+    this->site_exc.excute_results(to_do);
 //    string table_name = this->site_exc.mysql.gdd.get_frag_info(frag_id).table_name;
 //    excute_rec_table(table_name, frag_content);
     //return true;
