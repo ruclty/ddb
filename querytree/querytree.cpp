@@ -431,6 +431,19 @@ void query_tree::frag_table()
     frag_table_node(root);
 }
 
+void delete_frag(query_tree_node *frag)
+{
+    query_tree_node* parent = frag->parent;
+    int index = parent->get_child_index(frag);
+    parent->child[index] = NULL;
+    parent->remove_null_child();
+
+    if (parent->node_type == JOIN && parent->child.size() != 2)
+        delete_frag(parent);
+    else if(parent->child.size() == 0)
+        delete_frag(parent);
+}
+
 void query_tree::push_select(){
     for (auto sel: sel_nodes){
         sel->parent->child[0] = sel->child[0];
@@ -444,8 +457,7 @@ void query_tree::push_select(){
                 continue;
             if(frag_.frag_type == H){
                 if(conflict_node(sel, frag) || conflict_node(frag, sel)){
-                    frag->parent->child[index] = NULL;
-                    frag->parent->remove_null_child();
+                    delete_frag(frag);
                 }
                 else{
                     query_tree_node* new_sel = sel->copy();
