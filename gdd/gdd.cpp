@@ -678,7 +678,7 @@ bool save_frag_info(frag_info frag)
         insert_value(key, a);
     }
 
-    dir = "/attr_infos";
+    dir = "/attributes";
     create_dir(url, dir);
     for(auto a: frag.attr_infos){
         save_attr_info(frag.frag_id, a);
@@ -1030,17 +1030,20 @@ void generate_gdd()
         print_frag(frag);
     }
 
-    /*cout << get_frag_num() << endl;
+    cout << get_frag_num() << endl;
     print_frag(get_frag_info(8));
 
 
     vector<string> a;
     a.push_back("a1");
     a.push_back("a2");
-    update_frag_info(8, a, 20);
+    vector<attr_info> ai;
+    ai.push_back(attr_info{"a1","int",false});
+    ai.push_back(attr_info{"a2","char(80)",false});
+    update_frag_info(8, a,ai,20);
 
     cout << get_frag_num() << endl;
-    print_frag(get_frag_info(8));*/
+    print_frag(get_frag_info(8));
 
     cout << endl;
 
