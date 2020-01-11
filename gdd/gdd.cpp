@@ -78,14 +78,16 @@ void print_frag(frag_info f)
         for(auto p: f.predv)
             cout << p.get_str() << "|";
     }
-    else{
-        for(auto a: f.attr_names)
-            cout << a << "|";
-        for(auto a: f.attr_infos){
-            print_attr_info(a);
-            cout << endl;
-        }
+    //else{
+    for(auto a: f.attr_names)
+        cout << a << "|";
+    cout << endl;
+    for(int i = f.attr_infos.size();i >= 1; i --)
+    {
+        print_attr_info(f.attr_infos[i]);
+        cout << endl;
     }
+    //}
 
     cout << endl;
     cout << endl;
@@ -511,7 +513,7 @@ bool save_attr_info(string table_name, attr_info attr)
     return true;
 }
 
-bool save_attr_info(int frag_id, attr_info attr)
+bool save_attr_info(int frag_id, int index, attr_info attr)
 {
     string key;
     string value;
@@ -525,6 +527,10 @@ bool save_attr_info(int frag_id, attr_info attr)
 
     key = url+"/type";
     value = attr.type;
+    insert_value(key, value);
+
+    key = url+"/index";
+    value = to_string(index);
     insert_value(key, value);
 
     key = url+"/is_key";
@@ -681,7 +687,7 @@ bool save_frag_info(frag_info frag)
     dir = "/attributes";
     create_dir(url, dir);
     for(auto a: frag.attr_infos){
-        save_attr_info(frag.frag_id, a);
+        save_attr_info(frag.frag_id, a.first, a.second);
     }
 
     update_frag_num();
@@ -781,10 +787,12 @@ frag_info get_frag_info(int frag_id)
     }
     frag.preds = preds;
 
-    vector<attr_info> attr_infos;
+    map<int, attr_info> attr_infos;
     for (auto attr_name: frag.attr_names){
         attr_info attr = get_attr_info(frag.frag_id, attr_name);
-        attr_infos.push_back(attr);
+        string attr_index = "/fraginfo/"+to_string(frag_id)+"/attributes/"+attr_name+"/index";
+        string index = etcd_get_value(attr_index);
+        attr_infos[stoi(index)] = attr;
     }
     frag.attr_infos = attr_infos;
 
@@ -958,8 +966,8 @@ void generate_gdd()
     frag = frag_info{get_new_frag_id(),V,"course",1,false, 2357};
     frag.attr_names.push_back("id");
     frag.attr_names.push_back("name");
-    frag.attr_infos.push_back(attr_info{"id", "int", true});
-    frag.attr_infos.push_back(attr_info{"name", "char(80)",false});
+    frag.attr_infos[1] = attr_info{"id", "int", true};
+    frag.attr_infos[2] = attr_info{"name", "char(80)",false};
     save_frag_info(frag);
     
 
@@ -968,10 +976,10 @@ void generate_gdd()
     frag.attr_names.push_back("location");
     frag.attr_names.push_back("credit_hour");
     frag.attr_names.push_back("teacher_id");
-    frag.attr_infos.push_back(attr_info{"id", "int", true});
-    frag.attr_infos.push_back(attr_info{"location", "char(8)",false});
-    frag.attr_infos.push_back(attr_info{"credit_hour", "int", false});
-    frag.attr_infos.push_back(attr_info{"teacher_id", "int",false});
+    frag.attr_infos[1] = attr_info{"id", "int", true};
+    frag.attr_infos[2] = attr_info{"location", "char(8)",false};
+    frag.attr_infos[3] = attr_info{"credit_hour", "int", false};
+    frag.attr_infos[4] = attr_info{"teacher_id", "int",false};
     save_frag_info(frag);
     
 
@@ -1033,18 +1041,6 @@ void generate_gdd()
     cout << get_frag_num() << endl;
     print_frag(get_frag_info(8));
 
-
-    vector<string> a;
-    a.push_back("a1");
-    a.push_back("a2");
-    vector<attr_info> ai;
-    ai.push_back(attr_info{"a1","int",false});
-    ai.push_back(attr_info{"a2","char(80)",false});
-    update_frag_info(8, a,ai,20);
-
-    cout << get_frag_num() << endl;
-    print_frag(get_frag_info(8));
-
     cout << endl;
 
 }
@@ -1072,7 +1068,7 @@ bool update_frag_num()
     return true;
 }
 
-bool update_frag_info(int frag_id, vector<string> attr_names, vector<attr_info> attr_infos ,int size)
+bool update_frag_info(int frag_id, vector<string> attr_names, map<int, attr_info> attr_infos ,int size)
 {
     string attr_dir = "/fraginfo/"+to_string(frag_id)+"/attr_names";
     for(auto a: attr_names){
@@ -1082,7 +1078,7 @@ bool update_frag_info(int frag_id, vector<string> attr_names, vector<attr_info> 
     }
 
     for(auto attr: attr_infos){
-        save_attr_info(frag_id, attr);
+        save_attr_info(frag_id, attr.first, attr.second);
     }
 
     string key = "/fraginfo/"+to_string(frag_id)+"/size";

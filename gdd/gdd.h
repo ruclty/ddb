@@ -45,7 +45,7 @@ struct frag_info
 	vector<predicateS> preds;
 	vector<predicateV> predv;
 	vector<string> attr_names;
-	vector<attr_info> attr_infos;
+	map<int, attr_info> attr_infos;
 };
 
 //表相关信息的数据结构
@@ -72,12 +72,12 @@ site_info get_site_info(int site_id);
 bool save_table_info(table_info);
 table_info get_table_info(string);
 bool save_attr_info(string,attr_info);
-bool save_attr_info(int,attr_info);
+bool save_attr_info(int,int, attr_info);
 attr_info get_attr_info(string, string);
-attr_info get_attr_info(string, string);
+attr_info get_attr_info(int, string);
 bool save_frag_info(frag_info);
 frag_info get_frag_info(int);
-bool update_frag_info(int,vector<string>, vector<attr_info>,  int);
+bool update_frag_info(int,vector<string>, map<int, attr_info>, int);
 string get_frag_name(int);
 
 int get_frag_num();
