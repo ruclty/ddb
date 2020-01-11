@@ -81,7 +81,12 @@ void print_frag(frag_info f)
     else{
         for(auto a: f.attr_names)
             cout << a << "|";
+        for(auto a: f.attr_infos){
+            print_attr_info(a);
+            cout << endl;
+        }
     }
+
     cout << endl;
     cout << endl;
 }
@@ -252,7 +257,7 @@ string search_value(string &dir)
     }  
   
     char * buff_p = NULL;  
-    char result[5000] = "";
+    char result[5000000] = "";
     // 设置easy handle属性  
     curl_easy_setopt(easy_handle, CURLOPT_URL,ss); 
     curl_easy_setopt(easy_handle, CURLOPT_PORT, 2379);  
@@ -506,6 +511,29 @@ bool save_attr_info(string table_name, attr_info attr)
     return true;
 }
 
+bool save_attr_info(int frag_id, attr_info attr)
+{
+    string key;
+    string value;
+    string dir = "/"+attr.attr_name;
+    string url = "/fraginfo/"+to_string(frag_id)+"/attributes";
+    url = create_dir(url, dir);
+
+    key = url+"/name";
+    value = attr.attr_name;
+    insert_value(key, value);
+
+    key = url+"/type";
+    value = attr.type;
+    insert_value(key, value);
+
+    key = url+"/is_key";
+    value = attr.is_key?"true":"false";
+    insert_value(key, value);
+
+    return true;
+}
+
 attr_info get_attr_info(string table_name, string attr_name)
 {
     attr_info attr = attr_info{attr_name};
@@ -520,6 +548,26 @@ attr_info get_attr_info(string table_name, string attr_name)
     attr.type = etcd_get_value(dir);
 
     dir = "/tableinfo/"+table_name+"/attributes/"+attr_name+"/is_key";
+    string is_key = etcd_get_value(dir);
+    attr.is_key = (is_key=="true")?true:false;
+
+    return attr;
+}
+
+attr_info get_attr_info(int frag_id, string attr_name)
+{
+    attr_info attr = attr_info{attr_name};
+    Json::Value root;
+    Json::Value node;
+    Json::Reader reader;
+    Json::FastWriter writer;
+    string dir;
+    string info;
+
+    dir = "/fraginfo/"+to_string(frag_id)+"/attributes/"+attr_name+"/type";
+    attr.type = etcd_get_value(dir);
+
+    dir = "/fraginfo/"+to_string(frag_id)+"/attributes/"+attr_name+"/is_key";
     string is_key = etcd_get_value(dir);
     attr.is_key = (is_key=="true")?true:false;
 
@@ -629,6 +677,13 @@ bool save_frag_info(frag_info frag)
         value = a;
         insert_value(key, a);
     }
+
+    dir = "/attr_infos";
+    create_dir(url, dir);
+    for(auto a: frag.attr_infos){
+        save_attr_info(frag.frag_id, a);
+    }
+
     update_frag_num();
     return true;
 }
@@ -726,6 +781,13 @@ frag_info get_frag_info(int frag_id)
     }
     frag.preds = preds;
 
+    vector<attr_info> attr_infos;
+    for (auto attr_name: frag.attr_names){
+        attr_info attr = get_attr_info(frag.frag_id, attr_name);
+        attr_infos.push_back(attr);
+    }
+    frag.attr_infos = attr_infos;
+
     return frag;
 }
 
@@ -768,8 +830,8 @@ void generate_gdd()
 
     SITES[1].ip = "10.77.70.126";
     SITES[2].ip = "10.77.70.127"; 
-    SITES[3].ip = "10.77.70.128";
-    SITES[4].ip = "10.77.70.128";
+    SITES[3].ip = "10.77.70.126";
+    SITES[4].ip = "10.77.70.127";
 
     save_site_info(SITES[1]);
     save_site_info(SITES[2]);
@@ -790,9 +852,9 @@ void generate_gdd()
     table1.attr_names.push_back("id");
     table1.attributes["id"] = attr_info{"id", "int", true};
     table1.attr_names.push_back("name");
-    table1.attributes["name"] = attr_info{"name", "char", false};
+    table1.attributes["name"] = attr_info{"name", "char(25)", false};
     table1.attr_names.push_back("sex");
-    table1.attributes["sex"] = attr_info{"sex", "char", false};
+    table1.attributes["sex"] = attr_info{"sex", "char(1)", false};
     table1.attr_names.push_back("age");
     table1.attributes["age"] = attr_info{"age", "int", false};
     table1.attr_names.push_back("degree");
@@ -803,7 +865,7 @@ void generate_gdd()
     table2.attr_names.push_back("id");
     table2.attributes["id"] = attr_info{"id", "int", true};
     table2.attr_names.push_back("name");
-    table2.attributes["name"] = attr_info{"name", "char", false};
+    table2.attributes["name"] = attr_info{"name", "char(25)", false};
     table2.attr_names.push_back("title");
     table2.attributes["title"] = attr_info{"title", "int", false};
     save_table_info(table2);
@@ -812,9 +874,9 @@ void generate_gdd()
     table3.attr_names.push_back("id");
     table3.attributes["id"] = attr_info{"id", "int", true};
     table3.attr_names.push_back("name");
-    table3.attributes["name"] = attr_info{"name", "char", false};
+    table3.attributes["name"] = attr_info{"name", "char(80)", false};
     table3.attr_names.push_back("location");
-    table3.attributes["location"] = attr_info{"location", "char", false};
+    table3.attributes["location"] = attr_info{"location", "char(8)", false};
     table3.attr_names.push_back("credit_hour");
     table3.attributes["credit_hour"] = attr_info{"credit_hour", "int", false};
     table3.attr_names.push_back("teacher_id");
@@ -896,6 +958,8 @@ void generate_gdd()
     frag = frag_info{get_new_frag_id(),V,"course",1,false, 2357};
     frag.attr_names.push_back("id");
     frag.attr_names.push_back("name");
+    frag.attr_infos.push_back(attr_info{"id", "int", true});
+    frag.attr_infos.push_back(attr_info{"name", "char(80)",false});
     save_frag_info(frag);
     
 
@@ -904,6 +968,10 @@ void generate_gdd()
     frag.attr_names.push_back("location");
     frag.attr_names.push_back("credit_hour");
     frag.attr_names.push_back("teacher_id");
+    frag.attr_infos.push_back(attr_info{"id", "int", true});
+    frag.attr_infos.push_back(attr_info{"location", "char(8)",false});
+    frag.attr_infos.push_back(attr_info{"credit_hour", "int", false});
+    frag.attr_infos.push_back(attr_info{"teacher_id", "int",false});
     save_frag_info(frag);
     
 
