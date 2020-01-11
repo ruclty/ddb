@@ -77,7 +77,7 @@ attr_info get_attr_info(string, string);
 attr_info get_attr_info(string, string);
 bool save_frag_info(frag_info);
 frag_info get_frag_info(int);
-bool update_frag_info(int,vector<string>, int);
+bool update_frag_info(int,vector<string>, vector<attr_info>,  int);
 string get_frag_name(int);
 
 int get_frag_num();
