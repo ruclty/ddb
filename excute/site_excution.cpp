@@ -129,7 +129,7 @@ void site_excution::excute_results(vector<Operator> to_Operator){
 			
 			res.result_frag_id = this->mysql.excute_select_sql(sql, to_Operator[i].result_frag_id);
 			table_queue.push_back(temp_name);
-			this->check_plan();
+			//this->check_plan();
 			if(to_Operator[i].is_end == 1){
 				string table_name = get_frag_name(to_Operator[i].result_frag_id);
 				res.table_content = mysql.select_all_table(table_name);
@@ -156,4 +156,6 @@ void site_excution::excute_results(vector<Operator> to_Operator){
 		string table_name = get_frag_name(res.result_frag_id);
 		this->table_queue.push_back(table_name);
 	}
+	vector<Operator> next_Operator = this->check_plan();
+	excute_results(next_Operator);
 }
