@@ -205,5 +205,14 @@ void SendResultTable(int frag_id, string frag_content, string origin_table_name,
     return ok;*/
 }
 
-
+void SendDeleteTemp(int target_site_id,int sourceId)
+{
+	string target_site_ip=mapIdtoIp(target_site_id, sourceId);
+    	string frag_content_and_frag_id;
+    	
+    frag_content_and_frag_id='3';
+ //   cout <<  "frag_content_and_frag_id\t" << frag_content_and_frag_id << endl;
+ 	cout << "sent_len:" << frag_content_and_frag_id.size() << endl;
+    socket_client(target_site_id,frag_content_and_frag_id,sourceId);
+	}
 #endif

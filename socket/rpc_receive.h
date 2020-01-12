@@ -31,7 +31,7 @@ using std::vector;
 class rpc_receive{
 
 private:
-    int site_id;
+    int site_id = 2;
 public:
 
     rpc_receive(int);

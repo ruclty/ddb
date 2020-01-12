@@ -124,6 +124,8 @@ void site_excution::recieve_result_table(int frag_id,string table_content, strin
     }
     cout << temp  << endl;
     cout << table_content << endl;
+    for(int i=1;i<=4;i++)
+    		SendDeleteTemp(i,5);
 }
 
 vector<Operator> site_excution::recieve_plan(vector<Operator> plan){
