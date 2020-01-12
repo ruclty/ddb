@@ -86,6 +86,10 @@ int MySql::excute_select_sql(string Operator, int result_frag_id){
         
         int col_cnt = res_set->getMetaData()->getColumnCount();
         string sql = "create table " + temp_table_name + " (";
+ 
+        map<string,bool> col_name;
+       // map<int,bool> delet_col;
+        vector<int> delet_col_id;
 	   for(int i = 1; i<= col_cnt; i++){
             cout << sql << endl;
             int type_int = res_set->getMetaData()->getColumnType(i);
@@ -97,9 +101,10 @@ int MySql::excute_select_sql(string Operator, int result_frag_id){
               type = "varchar(25)";
             else if(type_int == 11)
               type = "varchar(1)";
-            
+
 
             string attr_name = res_set->getMetaData()->getColumnName(i);
+        
             cout << "attr_name:" << attr_name << endl;
 		  column_type.push_back(type);
 		  attr_info tm_attr_info;
@@ -107,18 +112,30 @@ int MySql::excute_select_sql(string Operator, int result_frag_id){
 		  tm_attr_info.attr_name = attr_name;
 		  if(is_union == false)
 		  	attributes[i] = tm_attr_info;	
-            //print_attr_info(attributes[attributes.size()-1]);
-            column.push_back(attr_name);
-		  //cout << attr_name << endl;
-	   		string col_name = attributes[i].attr_name;
-        		string col_type = type;
-        		string t = col_name + " " + col_type;
-        		sql += t;
 
-        		if(i != col_cnt)
-        			sql += ',';
-        		else
-        			sql += ')';
+		/////////////////////////////////////////save gdd information
+		  if(col_name[attributes[i].attr_name] == false){
+		  		col_name[attributes[i].attr_name] = true;
+		  		//delet_col[i] = false;
+
+		  		column.push_back(attributes[i].attr_name);
+		  //cout << attr_name << endl;
+	   			string col_name = attributes[i].attr_name;
+        			string col_type = type;
+        			string t = col_name + " " + col_type;
+        			sql += t;
+
+        			if(i != col_cnt)
+        				sql += ',';
+        			else
+        				sql += ')';
+		  	}
+
+		  else{
+		  		delet_col_id.push_back(i);
+		  	}
+            //print_attr_info(attributes[attributes.size()-1]);
+            
 	   	}
 	 
         cout <<"sql is:" + sql << endl;
@@ -132,25 +149,36 @@ int MySql::excute_select_sql(string Operator, int result_frag_id){
         	string sql = "insert into " + temp_table_name + " values (";
 
         	for(int colIndex = 1; colIndex <= col_cnt; colIndex ++){
+        			cout << sql << endl;
+        			bool is_delete = false;
+        			for(auto del_index : delet_col_id ){
+        				if(del_index == colIndex)
+        					is_delete = true;
+        					cout << "delete:" << colIndex << endl;
+        				}
+
+        			string temp = "";
  				string col_type = column_type[colIndex-1];
  				if(col_type[0] == 'i')
- 					sql += res_set->getString(colIndex);
+ 					temp += res_set->getString(colIndex);
  				else{
  					string t = "'" + res_set->getString(colIndex) + "'";
- 					sql += t;
+ 					temp += t;
  				}
- 				
+				if(is_delete == true)
+        				continue;
+ 				sql += temp;
  				if(colIndex != col_cnt)
  					sql += ",";
  				else
  					sql += ")";
                // cout << sql << endl;
         	}
-           // cout << sql << endl;
+          cout << sql << endl;
         	stmt->executeUpdate(sql);
         	line_count += 1;
         }
-        //cout << "Is dead" << endl;
+        cout << "Is dead" << endl;
         //res.pop_back();
     
         // cout << res << endl;
