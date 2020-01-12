@@ -70,6 +70,7 @@ vector<Operator> site_excution::check_plan(){
 					can_excute = true;
 					cout <<"can excute:" + sql_queue[i].content << endl;
 					results.push_back(sql_queue[i]);
+					break;
 				}
 			}
 		
@@ -83,6 +84,7 @@ vector<Operator> site_excution::check_plan(){
 			//cout << to_Operator[i] << endl;
 			if(it->id == results[i].id){
 				it = this->sql_queue.erase(it);
+				cout << "ereased!!!!" << endl;
 				break;
 			}
 		}
@@ -110,11 +112,13 @@ void site_excution::recieve_result_table(int frag_id,string table_content, strin
 	this->mysql.create_received_table(table_content,frag_id,origin_table_name,true);
 	int origin_frag_id = from_name_find_frag_id(origin_table_name);
 	frag_info source_table_info = get_frag_info(origin_frag_id);
-    vector<string> table_attr_name = source_table_info.attr_names;
+    map<int,attr_info> table_attributes = source_table_info.attr_infos;
     string temp = "";
-    for(int i=0; i<table_attr_name.size();i++){
-    		temp += table_attr_name[i];
-    		if(i != table_attr_name.size()-1){
+    for(int i=0; i<table_attributes.size();i++){
+    		attr_info atr = table_attributes[i+1];
+    		
+    		temp += atr.attr_name;
+    		if(i != table_attributes.size()-1){
     			temp += ',';
     			}
     }
