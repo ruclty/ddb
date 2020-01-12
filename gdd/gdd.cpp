@@ -856,11 +856,11 @@ void generate_gdd()
     site = get_site_info(4);
     print_site(site);
 
-    table_info table1 = table_info{"student","id",false};
-    table1.attr_names.push_back("id");
-    table1.attributes["id"] = attr_info{"id", "int", true};
-    table1.attr_names.push_back("name");
-    table1.attributes["name"] = attr_info{"name", "char(25)", false};
+    table_info table1 = table_info{"student","sid",false};
+    table1.attr_names.push_back("sid");
+    table1.attributes["sid"] = attr_info{"sid", "int", true};
+    table1.attr_names.push_back("sname");
+    table1.attributes["sname"] = attr_info{"sname", "char(25)", false};
     table1.attr_names.push_back("sex");
     table1.attributes["sex"] = attr_info{"sex", "char(1)", false};
     table1.attr_names.push_back("age");
@@ -869,20 +869,20 @@ void generate_gdd()
     table1.attributes["degree"] = attr_info{"degree", "int", false};
     save_table_info(table1);
 
-    table_info table2 = table_info{"teacher","id",false};
-    table2.attr_names.push_back("id");
-    table2.attributes["id"] = attr_info{"id", "int", true};
-    table2.attr_names.push_back("name");
-    table2.attributes["name"] = attr_info{"name", "char(25)", false};
+    table_info table2 = table_info{"teacher","tid",false};
+    table2.attr_names.push_back("tid");
+    table2.attributes["tid"] = attr_info{"tid", "int", true};
+    table2.attr_names.push_back("tname");
+    table2.attributes["tname"] = attr_info{"tname", "char(25)", false};
     table2.attr_names.push_back("title");
     table2.attributes["title"] = attr_info{"title", "int", false};
     save_table_info(table2);
 
-    table_info table3 = table_info{"course","id",false};
-    table3.attr_names.push_back("id");
-    table3.attributes["id"] = attr_info{"id", "int", true};
-    table3.attr_names.push_back("name");
-    table3.attributes["name"] = attr_info{"name", "char(80)", false};
+    table_info table3 = table_info{"course","cid",false};
+    table3.attr_names.push_back("cid");
+    table3.attributes["cid"] = attr_info{"cid", "int", true};
+    table3.attr_names.push_back("cname");
+    table3.attributes["cname"] = attr_info{"cname", "char(80)", false};
     table3.attr_names.push_back("location");
     table3.attributes["location"] = attr_info{"location", "char(8)", false};
     table3.attr_names.push_back("credit_hour");
@@ -891,7 +891,7 @@ void generate_gdd()
     table3.attributes["teacher_id"] = attr_info{"teacher_id", "int", false};
     save_table_info(table3);
 
-    table_info table4 = table_info{"exam","id",false};
+    table_info table4 = table_info{"exam","student_id",false};
     table4.attr_names.push_back("student_id");
     table4.attributes["student_id"] = attr_info{"student_id", "int", true};
     table4.attr_names.push_back("course_id");
@@ -917,32 +917,32 @@ void generate_gdd()
     predicateV predv2;
 
     frag = frag_info{get_new_frag_id(),H,"student",1,false, 49999};
-    predv = predicateV{"student","id",L,1050000};
+    predv = predicateV{"student","sid",L,1050000};
     frag.predv.push_back(predv);
     save_frag_info(frag);
 
     frag = frag_info{get_new_frag_id(),H,"student",2,false, 50000};
-    predv1 = predicateV{"student","id",GE,1050000};
-    predv2 = predicateV{"student","id",L,1100000};
+    predv1 = predicateV{"student","sid",GE,1050000};
+    predv2 = predicateV{"student","sid",L,1100000};
     frag.predv.push_back(predv1);
     frag.predv.push_back(predv2);
     save_frag_info(frag);
     
 
     frag = frag_info{get_new_frag_id(),H,"student",3,false, 50001};
-    predv = predicateV{"student","id",GE,1100000};
+    predv = predicateV{"student","sid",GE,1100000};
     frag.predv.push_back(predv);
     save_frag_info(frag);
 
     frag = frag_info{get_new_frag_id(),H,"teacher",1, false, 8119};
-    predv1 = predicateV{"teacher","id",L,2010000};
+    predv1 = predicateV{"teacher","tid",L,2010000};
     predv2 = predicateV{"teacher","title",NE,3};
     frag.predv.push_back(predv1);
     frag.predv.push_back(predv2);
     save_frag_info(frag);
 
     frag = frag_info{get_new_frag_id(),H,"teacher",2, false, 1880};
-    predv1 = predicateV{"teacher","id",L,2010000};
+    predv1 = predicateV{"teacher","tid",L,2010000};
     predv2 = predicateV{"teacher","title",EQ,3};
     frag.predv.push_back(predv1);
     frag.predv.push_back(predv2);
@@ -950,33 +950,33 @@ void generate_gdd()
     
 
     frag = frag_info{get_new_frag_id(),H,"teacher",3, false, 32405};
-    predv1 = predicateV{"teacher","id",GE,2010000};
+    predv1 = predicateV{"teacher","tid",GE,2010000};
     predv2 = predicateV{"teacher","title",NE,3};
     frag.predv.push_back(predv1);
     frag.predv.push_back(predv2);
     save_frag_info(frag);
     
     frag = frag_info{get_new_frag_id(),H,"teacher",4, false, 7596};
-    predv1 = predicateV{"teacher","id",GE,2010000};
+    predv1 = predicateV{"teacher","tid",GE,2010000};
     predv2 = predicateV{"teacher","title",EQ,3};
     frag.predv.push_back(predv1);
     frag.predv.push_back(predv2);
     save_frag_info(frag);
     
     frag = frag_info{get_new_frag_id(),V,"course",1,false, 2357};
-    frag.attr_names.push_back("id");
-    frag.attr_names.push_back("name");
-    frag.attr_infos[1] = attr_info{"id", "int", true};
-    frag.attr_infos[2] = attr_info{"name", "char(80)",false};
+    frag.attr_names.push_back("cid");
+    frag.attr_names.push_back("cname");
+    frag.attr_infos[1] = attr_info{"cid", "int", true};
+    frag.attr_infos[2] = attr_info{"cname", "char(80)",false};
     save_frag_info(frag);
     
 
     frag = frag_info{get_new_frag_id(),V,"course",2,false, 2357};
-    frag.attr_names.push_back("id");
+    frag.attr_names.push_back("cid");
     frag.attr_names.push_back("location");
     frag.attr_names.push_back("credit_hour");
     frag.attr_names.push_back("teacher_id");
-    frag.attr_infos[1] = attr_info{"id", "int", true};
+    frag.attr_infos[1] = attr_info{"cid", "int", true};
     frag.attr_infos[2] = attr_info{"location", "char(8)",false};
     frag.attr_infos[3] = attr_info{"credit_hour", "int", false};
     frag.attr_infos[4] = attr_info{"teacher_id", "int",false};
