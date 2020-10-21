@@ -202,9 +202,9 @@ int etcd_set_value(char *key, char *value, char *token)
         return -1;  
     }  
     // 设置easy handle属性  
-    curl_easy_setopt(easy_handle, CURLOPT_URL, ss);   
+    curl_easy_setopt(easy_handle, CURLOPT_URL, "http://127.0.0.1:2379/v2/keys/fragment_info/frag_1/Size");   
     curl_easy_setopt(easy_handle, CURLOPT_POST, 1);  
-    curl_easy_setopt(easy_handle, CURLOPT_POSTFIELDS, etcd_value);  
+    curl_easy_setopt(easy_handle, CURLOPT_POSTFIELDS, "12K");  
     curl_easy_setopt(easy_handle, CURLOPT_CUSTOMREQUEST, "PUT");  
    
     // 执行数据请求  
