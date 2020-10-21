@@ -259,9 +259,9 @@ string search_value(string &dir)
     }  
   
     char * buff_p = NULL;  
-    char result[5000000] = "";
+    char result[MAX_LEN] = "";
     // 设置easy handle属性  
-    curl_easy_setopt(easy_handle, CURLOPT_URL,ss); 
+    curl_easy_setopt(easy_handle, CURLOPT_URL,"http://127.0.0.1/v2/keys/fragment_info/frag_1/Size"); 
     curl_easy_setopt(easy_handle, CURLOPT_PORT, 2379);  
     curl_easy_setopt(easy_handle, CURLOPT_WRITEFUNCTION, &write_data);  
     curl_easy_setopt(easy_handle, CURLOPT_WRITEDATA, &result);  
